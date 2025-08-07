@@ -3,14 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Shuffle, Sparkles } from "lucide-react";
 
 const rouletteItems = [
-  { id: 1, title: "Ação & Aventura", color: "from-red-500 to-orange-500" },
-  { id: 2, title: "Comédia", color: "from-yellow-500 to-amber-500" },
-  { id: 3, title: "Drama", color: "from-blue-500 to-indigo-500" },
-  { id: 4, title: "Terror", color: "from-purple-500 to-violet-500" },
-  { id: 5, title: "Ficção Científica", color: "from-green-500 to-emerald-500" },
-  { id: 6, title: "Romance", color: "from-pink-500 to-rose-500" },
-  { id: 7, title: "Thriller", color: "from-gray-500 to-slate-500" },
-  { id: 8, title: "Documentário", color: "from-teal-500 to-cyan-500" },
+  { id: 1, title: "Ação & Aventura", color: "from-netflix-red to-red-600" },
+  { id: 2, title: "Comédia", color: "from-netflix-red/80 to-orange-600" },
+  { id: 3, title: "Drama", color: "from-netflix-red/60 to-red-700" },
+  { id: 4, title: "Terror", color: "from-netflix-red/90 to-red-800" },
+  { id: 5, title: "Ficção Científica", color: "from-netflix-red/70 to-red-500" },
+  { id: 6, title: "Romance", color: "from-netflix-red/85 to-pink-600" },
+  { id: 7, title: "Thriller", color: "from-netflix-red/75 to-gray-700" },
+  { id: 8, title: "Documentário", color: "from-netflix-red/65 to-orange-700" },
 ];
 
 const Roulette = () => {
@@ -49,7 +49,7 @@ const Roulette = () => {
       <div className="relative">
         {/* Pointer */}
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 z-10">
-          <div className="w-0 h-0 border-l-4 border-r-4 border-b-8 border-l-transparent border-r-transparent border-b-primary glow-effect"></div>
+          <div className="w-0 h-0 border-l-4 border-r-4 border-b-8 border-l-transparent border-r-transparent border-b-netflix-red glow-effect"></div>
         </div>
         
         {/* Wheel */}
@@ -95,7 +95,7 @@ const Roulette = () => {
         onClick={spinRoulette}
         disabled={isSpinning}
         size="lg"
-        className="bg-gradient-to-r from-primary to-streaming-blue text-white border-0 hover:opacity-90 glow-effect px-8 py-3"
+        className="bg-netflix-red text-white border-0 hover:bg-netflix-red/90 glow-effect px-8 py-3 transition-all duration-300 hover:scale-105"
       >
         {isSpinning ? (
           <>

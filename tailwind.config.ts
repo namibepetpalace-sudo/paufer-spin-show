@@ -53,16 +53,12 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				// PauferFlix custom colors
-				netflix: 'hsl(var(--netflix-red))',
-				streaming: {
-					purple: 'hsl(var(--streaming-purple))',
-					blue: 'hsl(var(--streaming-blue))'
-				},
-				surface: {
-					dark: 'hsl(var(--dark-surface))',
-					darker: 'hsl(var(--darker-surface))'
-				},
+				// Netflix custom colors
+				'netflix-red': 'hsl(var(--netflix-red))',
+				'netflix-dark': 'hsl(var(--netflix-dark))',
+				'netflix-darker': 'hsl(var(--netflix-darker))',
+				'netflix-gray': 'hsl(var(--netflix-gray))',
+				'netflix-light-gray': 'hsl(var(--netflix-light-gray))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -127,6 +123,18 @@ export default {
 					'50%': {
 						transform: 'translateY(-10px)'
 					}
+				},
+				'typewriter': {
+					'0%': { width: '0' },
+					'100%': { width: '100%' }
+				},
+				'netflix-glow': {
+					'0%, 100%': { 
+						boxShadow: '0 0 20px hsl(var(--netflix-red) / 0.3)' 
+					},
+					'50%': { 
+						boxShadow: '0 0 40px hsl(var(--netflix-red) / 0.6)' 
+					}
 				}
 			},
 			animation: {
@@ -135,7 +143,9 @@ export default {
 				'spin-roulette': 'spin-roulette 3s cubic-bezier(0.17, 0.67, 0.12, 0.99)',
 				'fade-in-up': 'fade-in-up 0.6s ease-out',
 				'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
-				'float': 'float 3s ease-in-out infinite'
+				'float': 'float 3s ease-in-out infinite',
+				'typewriter': 'typewriter 4s steps(40) infinite',
+				'netflix-glow': 'netflix-glow 3s ease-in-out infinite'
 			}
 		}
 	},

@@ -6,56 +6,56 @@
 
 @layer base {
   :root {
-    /* Dark streaming theme */
-    --background: 220 26% 6%;
-    --foreground: 210 40% 98%;
+    /* Netflix Dark Theme */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
 
-    --card: 220 26% 8%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 220 26% 8%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 98%;
 
-    /* Purple streaming brand colors */
-    --primary: 262 83% 58%;
-    --primary-foreground: 210 40% 98%;
-    --primary-glow: 262 83% 68%;
+    /* Netflix Red as Primary */
+    --primary: 348 97% 39%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 348 97% 49%;
 
-    --secondary: 220 14% 16%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 18%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 220 14% 12%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 64.9%;
 
-    --accent: 262 83% 58%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 0 0% 18%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 220 14% 16%;
-    --input: 220 14% 16%;
-    --ring: 262 83% 58%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 348 97% 39%;
 
     --radius: 0.75rem;
 
-    /* Custom PauferFlix tokens */
-    --netflix-red: 0 100% 50%;
-    --streaming-purple: 262 83% 58%;
-    --streaming-blue: 221 83% 53%;
-    --dark-surface: 220 26% 8%;
-    --darker-surface: 220 26% 6%;
+    /* Netflix Custom Colors */
+    --netflix-red: 348 97% 39%;
+    --netflix-dark: 0 0% 8%;
+    --netflix-darker: 0 0% 4%;
+    --netflix-gray: 0 0% 18%;
+    --netflix-light-gray: 0 0% 40%;
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(221 83% 53%));
-    --gradient-hero: linear-gradient(135deg, hsl(262 83% 58%), hsl(221 83% 53%), hsl(262 83% 68%));
-    --gradient-card: linear-gradient(135deg, hsl(220 26% 8%), hsl(220 14% 16%));
-    --gradient-glow: radial-gradient(circle at center, hsl(262 83% 58% / 0.3), transparent 70%);
+    /* Netflix Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(348 97% 39%), hsl(0 0% 8%));
+    --gradient-hero: linear-gradient(135deg, hsl(348 97% 39% / 0.9), hsl(0 0% 4% / 0.8), hsl(0 0% 0%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 18%));
+    --gradient-glow: radial-gradient(circle at center, hsl(348 97% 39% / 0.4), transparent 70%);
     
-    /* Shadows */
-    --shadow-glow: 0 0 40px hsl(262 83% 58% / 0.3);
-    --shadow-card: 0 10px 30px -10px hsl(220 26% 4% / 0.5);
-    --shadow-elevated: 0 20px 40px -10px hsl(220 26% 4% / 0.7);
+    /* Netflix Shadows */
+    --shadow-glow: 0 0 40px hsl(348 97% 39% / 0.4);
+    --shadow-card: 0 10px 30px -10px hsl(0 0% 0% / 0.7);
+    --shadow-elevated: 0 20px 40px -10px hsl(0 0% 0% / 0.8);
     
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -135,6 +135,11 @@
   
   .glow-effect {
     box-shadow: var(--shadow-glow);
+    transition: var(--transition-smooth);
+  }
+  
+  .glow-effect:hover {
+    box-shadow: 0 0 30px hsl(var(--netflix-red) / 0.6);
   }
   
   /* Movie Cards */
@@ -162,13 +167,24 @@
     -webkit-text-fill-color: transparent;
   }
   
+  /* Typewriter Animation for Movie Titles */
+  .typewriter {
+    border-right: 2px solid hsl(var(--netflix-red));
+    animation: typewriter-cursor 1s infinite;
+  }
+  
+  @keyframes typewriter-cursor {
+    0%, 50% { border-color: hsl(var(--netflix-red)); }
+    51%, 100% { border-color: transparent; }
+  }
+  
   /* Custom Scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
     width: 8px;
   }
   
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: hsl(var(--darker-surface));
+    background: hsl(var(--netflix-darker));
   }
   
   .custom-scrollbar::-webkit-scrollbar-thumb {
@@ -177,6 +193,6 @@
   }
   
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--primary));
+    background: hsl(var(--netflix-red));
   }
 }
