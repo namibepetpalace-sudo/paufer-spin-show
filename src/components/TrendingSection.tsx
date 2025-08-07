@@ -1,66 +1,52 @@
 import { Button } from "@/components/ui/button";
 import { TrendingUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
 import MovieCard from "./MovieCard";
+import { tmdbService, TMDbMovie, TMDbGenre } from "@/lib/tmdb";
 
-// Mock data for demonstration
-const mockTrendingMovies = [
-  {
-    id: 1,
-    title: "Avatar: O Caminho da Água",
-    posterPath: undefined,
-    rating: 8.1,
-    year: "2022",
-    genre: "Ficção Científica",
-    type: "movie" as const
-  },
-  {
-    id: 2,
-    title: "Stranger Things",
-    posterPath: undefined,
-    rating: 9.2,
-    year: "2023",
-    genre: "Terror",
-    type: "tv" as const
-  },
-  {
-    id: 3,
-    title: "Top Gun: Maverick",
-    posterPath: undefined,
-    rating: 8.7,
-    year: "2022",
-    genre: "Ação",
-    type: "movie" as const
-  },
-  {
-    id: 4,
-    title: "The Last of Us",
-    posterPath: undefined,
-    rating: 9.0,
-    year: "2023",
-    genre: "Drama",
-    type: "tv" as const
-  },
-  {
-    id: 5,
-    title: "Duna",
-    posterPath: undefined,
-    rating: 8.3,
-    year: "2021",
-    genre: "Ficção Científica",
-    type: "movie" as const
-  },
-  {
-    id: 6,
-    title: "Wednesday",
-    posterPath: undefined,
-    rating: 8.5,
-    year: "2022",
-    genre: "Comédia",
-    type: "tv" as const
-  }
-];
+interface TrendingSectionProps {
+  onMovieSelect?: (movie: any) => void;
+}
 
-const TrendingSection = () => {
+const TrendingSection = ({ onMovieSelect }: TrendingSectionProps) => {
+  const [trendingMovies, setTrendingMovies] = useState<TMDbMovie[]>([]);
+  const [genres, setGenres] = useState<TMDbGenre[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadTrendingData = async () => {
+      try {
+        const [trending, movieGenres, tvGenres] = await Promise.all([
+          tmdbService.getTrending('week'),
+          tmdbService.getMovieGenres(),
+          tmdbService.getTVGenres()
+        ]);
+        
+        setTrendingMovies(trending.slice(0, 6));
+        setGenres([...movieGenres, ...tvGenres]);
+      } catch (error) {
+        console.error('Erro ao carregar dados da TMDb:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTrendingData();
+  }, []);
+
+  const handleMovieClick = (movie: TMDbMovie) => {
+    if (onMovieSelect) {
+      onMovieSelect({
+        id: movie.id,
+        title: tmdbService.getTitle(movie),
+        posterPath: movie.poster_path,
+        rating: movie.vote_average,
+        year: tmdbService.formatReleaseYear(tmdbService.getReleaseDate(movie)),
+        genre: tmdbService.getGenreName(movie.genre_ids, genres),
+        type: tmdbService.getMediaType(movie)
+      });
+    }
+  };
   return (
     <section className="py-12">
       <div className="container mx-auto px-4">
@@ -93,9 +79,30 @@ const TrendingSection = () => {
         
         {/* Movies Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 overflow-x-auto custom-scrollbar">
-          {mockTrendingMovies.map((movie) => (
-            <MovieCard key={movie.id} {...movie} />
-          ))}
+          {loading ? (
+            // Loading skeleton
+            Array.from({ length: 6 }, (_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-muted rounded-xl h-64 mb-3"></div>
+                <div className="h-4 bg-muted rounded mb-2"></div>
+                <div className="h-3 bg-muted rounded w-3/4"></div>
+              </div>
+            ))
+          ) : (
+            trendingMovies.map((movie) => (
+              <div key={movie.id} onClick={() => handleMovieClick(movie)}>
+                <MovieCard
+                  id={movie.id}
+                  title={tmdbService.getTitle(movie)}
+                  posterPath={tmdbService.getImageUrl(movie.poster_path)}
+                  rating={movie.vote_average}
+                  year={tmdbService.formatReleaseYear(tmdbService.getReleaseDate(movie))}
+                  genre={tmdbService.getGenreName(movie.genre_ids, genres)}
+                  type={tmdbService.getMediaType(movie)}
+                />
+              </div>
+            ))
+          )}
         </div>
         
         {/* View All Button */}

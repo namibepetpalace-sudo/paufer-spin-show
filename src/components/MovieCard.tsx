@@ -12,7 +12,6 @@ interface MovieCardProps {
 }
 
 const MovieCard = ({ title, posterPath, rating, year, genre, type }: MovieCardProps) => {
-  // Using placeholder image for demo
   const imageUrl = posterPath || `https://via.placeholder.com/300x450/1a1a2e/eee?text=${encodeURIComponent(title)}`;
   
   return (
