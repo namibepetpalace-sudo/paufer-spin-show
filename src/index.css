@@ -2,41 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* PauferFlix Design System - Streaming & Entertainment Theme */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Dark streaming theme */
+    --background: 220 26% 6%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 220 26% 8%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 220 26% 8%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 222.2 47.4% 11.2%;
+    /* Purple streaming brand colors */
+    --primary: 262 83% 58%;
     --primary-foreground: 210 40% 98%;
+    --primary-glow: 262 83% 68%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 220 14% 16%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 14% 12%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 14% 16%;
+    --input: 220 14% 16%;
+    --ring: 262 83% 58%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Custom PauferFlix tokens */
+    --netflix-red: 0 100% 50%;
+    --streaming-purple: 262 83% 58%;
+    --streaming-blue: 221 83% 53%;
+    --dark-surface: 220 26% 8%;
+    --darker-surface: 220 26% 6%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(221 83% 53%));
+    --gradient-hero: linear-gradient(135deg, hsl(262 83% 58%), hsl(221 83% 53%), hsl(262 83% 68%));
+    --gradient-card: linear-gradient(135deg, hsl(220 26% 8%), hsl(220 14% 16%));
+    --gradient-glow: radial-gradient(circle at center, hsl(262 83% 58% / 0.3), transparent 70%);
+    
+    /* Shadows */
+    --shadow-glow: 0 0 40px hsl(262 83% 58% / 0.3);
+    --shadow-card: 0 10px 30px -10px hsl(220 26% 4% / 0.5);
+    --shadow-elevated: 0 20px 40px -10px hsl(220 26% 4% / 0.7);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
     --sidebar-background: 0 0% 98%;
 
@@ -101,5 +124,59 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Hero Section */
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+  
+  .glow-effect {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  /* Movie Cards */
+  .movie-card {
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-smooth);
+  }
+  
+  .movie-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-elevated);
+  }
+  
+  /* Roleta Spin Animation */
+  .spin-roulette {
+    transition: var(--transition-spring);
+  }
+  
+  /* Gradient Text */
+  .gradient-text {
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: hsl(var(--darker-surface));
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--gradient-primary);
+    border-radius: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary));
   }
 }
