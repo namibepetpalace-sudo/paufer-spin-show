@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Film } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const Header = () => {
   return (
@@ -36,6 +37,7 @@ const Header = () => {
           <Button variant="ghost" className="text-foreground hover:text-netflix-red transition-colors">
             Favoritos
           </Button>
+          <ThemeToggle />
           <Button className="bg-netflix-red text-white border-0 hover:bg-netflix-red/90 transition-all duration-300 hover:scale-105">
             Entrar
           </Button>
