@@ -25,11 +25,42 @@ const HeroSection = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const backgroundVideos = [
+    "https://videos.pexels.com/video-files/5135769/5135769-uhd_2560_1440_25fps.mp4",
+    "https://videos.pexels.com/video-files/7988168/7988168-uhd_2560_1440_25fps.mp4", 
+    "https://videos.pexels.com/video-files/7988162/7988162-uhd_2560_1440_25fps.mp4",
+    "https://videos.pexels.com/video-files/5135773/5135773-uhd_2560_1440_25fps.mp4"
+  ];
+
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
+  useEffect(() => {
+    const videoInterval = setInterval(() => {
+      setCurrentVideoIndex((prev) => (prev + 1) % backgroundVideos.length);
+    }, 10000); // 10 segundos
+    return () => clearInterval(videoInterval);
+  }, []);
+
   return (
     <section className="relative py-20 overflow-hidden">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 hero-gradient opacity-90"></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/10 to-background"></div>
+      {/* Background Video */}
+      <div className="absolute inset-0 w-full h-full">
+        <video
+          key={currentVideoIndex}
+          className="absolute inset-0 w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+        >
+          <source src={backgroundVideos[currentVideoIndex]} type="video/mp4" />
+        </video>
+        {/* Dark overlay for better text contrast */}
+        <div className="absolute inset-0 bg-black/60"></div>
+      </div>
+      
+      {/* Background Gradient for extra contrast */}
+      <div className="absolute inset-0 hero-gradient opacity-40"></div>
       
       {/* Floating Elements - Netflix Red */}
       <div className="absolute top-20 left-10 w-20 h-20 bg-netflix-red/20 rounded-full blur-xl animate-float"></div>
@@ -47,20 +78,20 @@ const HeroSection = () => {
           <div className="text-center lg:text-left space-y-8 animate-fade-in-up">
             <div className="space-y-6">
               <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                <span className="gradient-text">PauferFlix</span>
+                <span className="gradient-text drop-shadow-lg">PauferFlix</span>
                 <br />
-                <span className="text-foreground">Descubra o que assistir</span>
+                <span className="text-white drop-shadow-lg">Descubra o que assistir</span>
               </h1>
               
               {/* Animated movie titles */}
               <div className="h-12 overflow-hidden">
-                <div className="text-2xl lg:text-3xl font-bold text-netflix-red">
+                <div className="text-2xl lg:text-3xl font-bold text-netflix-red drop-shadow-lg">
                   Agora assistindo: <span className="typewriter">{movieTitles[currentMovieIndex]}</span>
                 </div>
               </div>
               
-              <p className="text-xl text-muted-foreground max-w-lg mx-auto lg:mx-0">
-                <span className="gradient-text font-semibold">"Deixe o destino escolher sua próxima série"</span>
+              <p className="text-xl text-white/90 max-w-lg mx-auto lg:mx-0 drop-shadow-md">
+                <span className="gradient-text font-semibold drop-shadow-lg">"Deixe o destino escolher sua próxima série"</span>
                 <br />
                 Encontre filmes e séries perfeitamente adequados ao seu gosto ou deixe nossa roleta mágica surpreender você!
               </p>
@@ -70,7 +101,7 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button
                 size="lg"
-                className="bg-netflix-red text-white border-0 hover:bg-netflix-red/90 glow-effect px-8 py-4 text-lg transition-all duration-300 hover:scale-105"
+                className="bg-netflix-red text-white border-0 hover:bg-netflix-red/90 glow-effect px-8 py-4 text-lg transition-all duration-300 hover:scale-105 shadow-lg backdrop-blur-sm"
               >
                 <Play className="h-5 w-5 mr-2" />
                 Começar Agora
@@ -79,7 +110,7 @@ const HeroSection = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-netflix-red text-netflix-red hover:bg-netflix-red hover:text-white px-8 py-4 text-lg transition-all duration-300"
+                className="border-white/80 text-white hover:bg-white/20 hover:text-white px-8 py-4 text-lg transition-all duration-300 backdrop-blur-sm bg-white/10"
               >
                 <Info className="h-5 w-5 mr-2" />
                 Como Funciona
@@ -87,18 +118,18 @@ const HeroSection = () => {
             </div>
             
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-8 pt-8">
+            <div className="grid grid-cols-3 gap-8 pt-8 backdrop-blur-sm bg-white/10 rounded-lg p-6">
               <div className="text-center">
-                <div className="text-2xl font-bold gradient-text">50K+</div>
-                <div className="text-sm text-muted-foreground">Filmes e Séries</div>
+                <div className="text-2xl font-bold gradient-text drop-shadow-lg">50K+</div>
+                <div className="text-sm text-white/80">Filmes e Séries</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold gradient-text">10M+</div>
-                <div className="text-sm text-muted-foreground">Descobertas</div>
+                <div className="text-2xl font-bold gradient-text drop-shadow-lg">10M+</div>
+                <div className="text-sm text-white/80">Descobertas</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold gradient-text">98%</div>
-                <div className="text-sm text-muted-foreground">Satisfação</div>
+                <div className="text-2xl font-bold gradient-text drop-shadow-lg">98%</div>
+                <div className="text-sm text-white/80">Satisfação</div>
               </div>
             </div>
           </div>
