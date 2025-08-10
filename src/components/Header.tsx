@@ -91,7 +91,11 @@ const Header = ({ onSearchResults }: HeaderProps) => {
           <Button variant="ghost" className="text-foreground hover:text-netflix-red transition-colors">
             Tendências
           </Button>
-          <Button variant="ghost" className="text-foreground hover:text-netflix-red transition-colors">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/favorites')}
+            className="text-foreground hover:text-netflix-red transition-colors"
+          >
             Favoritos
           </Button>
           <ThemeToggle />

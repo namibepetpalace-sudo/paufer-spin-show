@@ -1,5 +1,10 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Star, Play, Heart } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface MovieCardProps {
   id: number;
@@ -11,8 +16,77 @@ interface MovieCardProps {
   type: 'movie' | 'tv';
 }
 
-const MovieCard = ({ title, posterPath, rating, year, genre, type }: MovieCardProps) => {
+const MovieCard = ({ id, title, posterPath, rating, year, genre, type }: MovieCardProps) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  
   const imageUrl = posterPath || `https://via.placeholder.com/300x450/1a1a2e/eee?text=${encodeURIComponent(title)}`;
+
+  const handleDetailsClick = () => {
+    navigate(`/${type}/${id}`);
+  };
+
+  const handleFavoriteClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!user) {
+      toast({
+        title: "Login necessário",
+        description: "Faça login para adicionar aos favoritos.",
+        variant: "destructive",
+      });
+      navigate('/auth');
+      return;
+    }
+
+    setFavoriteLoading(true);
+    try {
+      if (isFavorite) {
+        // Remove from favorites
+        await supabase
+          .from('favorites')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('movie_id', id)
+          .eq('media_type', type);
+        
+        setIsFavorite(false);
+        toast({
+          title: "Removido dos favoritos",
+          description: `${title} foi removido dos seus favoritos.`,
+        });
+      } else {
+        // Add to favorites
+        await supabase
+          .from('favorites')
+          .insert({
+            user_id: user.id,
+            movie_id: id,
+            movie_title: title,
+            movie_poster: posterPath,
+            media_type: type
+          });
+        
+        setIsFavorite(true);
+        toast({
+          title: "Adicionado aos favoritos",
+          description: `${title} foi adicionado aos seus favoritos.`,
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao gerenciar favorito:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar os favoritos.",
+        variant: "destructive",
+      });
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
   
   return (
     <div className="movie-card group relative rounded-xl overflow-hidden p-4 cursor-pointer">
@@ -28,6 +102,7 @@ const MovieCard = ({ title, posterPath, rating, year, genre, type }: MovieCardPr
         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
           <Button
             size="sm"
+            onClick={handleDetailsClick}
             className="bg-primary hover:bg-primary-glow text-white border-0"
           >
             <Play className="h-4 w-4 mr-2" />
@@ -46,9 +121,13 @@ const MovieCard = ({ title, posterPath, rating, year, genre, type }: MovieCardPr
         <Button
           size="sm"
           variant="ghost"
-          className="absolute top-2 right-2 h-8 w-8 p-0 bg-black/50 hover:bg-black/70 text-white border-0"
+          onClick={handleFavoriteClick}
+          disabled={favoriteLoading}
+          className={`absolute top-2 right-2 h-8 w-8 p-0 bg-black/50 hover:bg-black/70 border-0 ${
+            isFavorite ? 'text-red-500' : 'text-white'
+          }`}
         >
-          <Heart className="h-4 w-4" />
+          <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
         </Button>
       </div>
       
