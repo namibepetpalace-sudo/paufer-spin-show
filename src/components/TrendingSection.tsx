@@ -22,7 +22,7 @@ const TrendingSection = ({ onMovieSelect }: TrendingSectionProps) => {
           tmdbService.getTVGenres()
         ]);
         
-        setTrendingMovies(trending.slice(0, 6));
+        setTrendingMovies(trending.slice(0, 18));
         setGenres([...movieGenres, ...tvGenres]);
       } catch (error) {
         console.error('Erro ao carregar dados da TMDb:', error);
@@ -78,10 +78,10 @@ const TrendingSection = ({ onMovieSelect }: TrendingSectionProps) => {
         </div>
         
         {/* Movies Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 overflow-x-auto custom-scrollbar">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {loading ? (
             // Loading skeleton
-            Array.from({ length: 6 }, (_, i) => (
+            Array.from({ length: 18 }, (_, i) => (
               <div key={i} className="animate-pulse">
                 <div className="bg-muted rounded-xl h-64 mb-3"></div>
                 <div className="h-4 bg-muted rounded mb-2"></div>

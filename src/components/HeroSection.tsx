@@ -134,21 +134,42 @@ const HeroSection = () => {
             </div>
           </div>
           
-          {/* Right Side - Roulette */}
+          {/* Right Side - Movie Poster and Roulette */}
           <div className="flex justify-center lg:justify-end animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-            <div className="relative">
-              {/* Glow effect behind roulette - Netflix Red */}
-              <div className="absolute inset-0 bg-gradient-to-r from-netflix-red/40 to-netflix-red/20 rounded-full blur-3xl transform scale-150 animate-netflix-glow"></div>
-              
+            <div className="flex gap-8 items-center">
+              {/* Featured Movie Poster */}
+              <div className="hidden lg:block relative">
+                <div className="relative w-48 h-72 rounded-xl overflow-hidden shadow-2xl movie-card">
+                  <img
+                    src="https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg"
+                    alt="Filme em destaque"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                    <h3 className="font-bold text-lg mb-1">The Matrix</h3>
+                    <p className="text-sm text-white/90">Ficção Científica • 1999</p>
+                    <div className="flex items-center mt-2 text-yellow-400">
+                      <span className="text-sm">⭐ 8.7</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Roulette Component */}
               <div className="relative">
-                <Roulette />
-              </div>
-              
-              {/* Floating icon - Netflix theme */}
-              <div className="absolute -top-4 -right-4">
-                <div className="bg-netflix-red p-3 rounded-full shadow-lg animate-float glow-effect">
-                  <Zap className="h-6 w-6 text-white" />
+                {/* Glow effect behind roulette - Netflix Red */}
+                <div className="absolute inset-0 bg-gradient-to-r from-netflix-red/40 to-netflix-red/20 rounded-full blur-3xl transform scale-150 animate-netflix-glow"></div>
+                
+                <div className="relative">
+                  <Roulette />
+                </div>
+                
+                {/* Floating icon - Netflix theme */}
+                <div className="absolute -top-4 -right-4">
+                  <div className="bg-netflix-red p-3 rounded-full shadow-lg animate-float glow-effect">
+                    <Zap className="h-6 w-6 text-white" />
+                  </div>
                 </div>
               </div>
             </div>
