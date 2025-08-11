@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
+import WatchProviders from "@/components/WatchProviders";
 
 interface MovieDetailsProps {
   type: 'movie' | 'tv';
@@ -152,10 +153,11 @@ const MovieDetails = ({ type }: MovieDetailsProps) => {
                   <div className="h-4 bg-muted rounded"></div>
                   <div className="h-4 bg-muted rounded"></div>
                   <div className="h-4 bg-muted rounded w-2/3"></div>
-                </div>
               </div>
             </div>
           </div>
+        </div>
+
         </div>
       </div>
     );
@@ -311,6 +313,13 @@ const MovieDetails = ({ type }: MovieDetailsProps) => {
             </Card>
           </div>
         </div>
+
+        {/* Watch Providers Section - Only for logged in users */}
+        {user && (
+          <div className="container mx-auto px-4 py-8">
+            <WatchProviders movieId={parseInt(id!)} mediaType={type} />
+          </div>
+        )}
       </div>
     </div>
   );

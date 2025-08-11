@@ -12,17 +12,21 @@ const TrendingSection = ({ onMovieSelect }: TrendingSectionProps) => {
   const [trendingMovies, setTrendingMovies] = useState<TMDbMovie[]>([]);
   const [genres, setGenres] = useState<TMDbGenre[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const loadTrendingData = async () => {
       try {
         const [trending, movieGenres, tvGenres] = await Promise.all([
-          tmdbService.getTrending('week'),
+          tmdbService.getTrendingWithPagination('week', 1),
           tmdbService.getMovieGenres(),
           tmdbService.getTVGenres()
         ]);
         
-        setTrendingMovies(trending.slice(0, 18));
+        setTrendingMovies(trending.results.slice(0, 18));
+        setTotalPages(trending.total_pages);
         setGenres([...movieGenres, ...tvGenres]);
       } catch (error) {
         console.error('Erro ao carregar dados da TMDb:', error);
@@ -33,6 +37,22 @@ const TrendingSection = ({ onMovieSelect }: TrendingSectionProps) => {
 
     loadTrendingData();
   }, []);
+
+  const loadMoreMovies = async () => {
+    if (currentPage >= totalPages || loadingMore) return;
+    
+    setLoadingMore(true);
+    try {
+      const nextPage = currentPage + 1;
+      const trending = await tmdbService.getTrendingWithPagination('week', nextPage);
+      setTrendingMovies(prev => [...prev, ...trending.results]);
+      setCurrentPage(nextPage);
+    } catch (error) {
+      console.error('Erro ao carregar mais filmes:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   const handleMovieClick = (movie: TMDbMovie) => {
     if (onMovieSelect) {
@@ -106,14 +126,18 @@ const TrendingSection = ({ onMovieSelect }: TrendingSectionProps) => {
         </div>
         
         {/* View All Button */}
-        <div className="text-center mt-8">
-          <Button
-            variant="outline"
-            className="border-primary text-primary hover:bg-primary hover:text-white"
-          >
-            Ver Mais Tendências
-          </Button>
-        </div>
+        {currentPage < totalPages && (
+          <div className="text-center mt-8">
+            <Button
+              variant="outline"
+              className="border-primary text-primary hover:bg-primary hover:text-white"
+              onClick={loadMoreMovies}
+              disabled={loadingMore}
+            >
+              {loadingMore ? 'Carregando...' : 'Ver Mais Tendências'}
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );

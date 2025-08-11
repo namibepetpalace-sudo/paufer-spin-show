@@ -94,6 +94,15 @@ class TMDbService {
     if (item.media_type) return item.media_type;
     return item.title ? 'movie' : 'tv';
   }
+
+  async getWatchProviders(id: number, type: 'movie' | 'tv'): Promise<any> {
+    return this.fetchFromTMDb(`/${type}/${id}/watch/providers`);
+  }
+
+  async getTrendingWithPagination(timeWindow: 'day' | 'week' = 'week', page: number = 1): Promise<{ results: TMDbMovie[], total_pages: number }> {
+    const data = await this.fetchFromTMDb(`/trending/all/${timeWindow}?page=${page}`);
+    return { results: data.results, total_pages: data.total_pages };
+  }
 }
 
 export const tmdbService = new TMDbService();
