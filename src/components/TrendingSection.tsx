@@ -114,11 +114,12 @@ const TrendingSection = ({ onMovieSelect }: TrendingSectionProps) => {
                 <MovieCard
                   id={movie.id}
                   title={tmdbService.getTitle(movie)}
-                  posterPath={tmdbService.getImageUrl(movie.poster_path)}
+                  posterPath={movie.poster_path}
                   rating={movie.vote_average}
                   year={tmdbService.formatReleaseYear(tmdbService.getReleaseDate(movie))}
                   genre={tmdbService.getGenreName(movie.genre_ids, genres)}
                   type={tmdbService.getMediaType(movie)}
+                  movie={movie}
                 />
               </div>
             ))

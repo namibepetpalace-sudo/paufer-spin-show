@@ -99,6 +99,58 @@ class TMDbService {
     return this.fetchFromTMDb(`/${type}/${id}/watch/providers`);
   }
 
+  async getMovieTrailers(id: number): Promise<any> {
+    return this.fetchFromTMDb(`/movie/${id}/videos`);
+  }
+
+  async getTVTrailers(id: number): Promise<any> {
+    return this.fetchFromTMDb(`/tv/${id}/videos`);
+  }
+
+  async getTopRatedMovies(): Promise<TMDbMovie[]> {
+    const data = await this.fetchFromTMDb('/movie/top_rated');
+    return data.results;
+  }
+
+  async getUpcomingMovies(): Promise<TMDbMovie[]> {
+    const data = await this.fetchFromTMDb('/movie/upcoming');
+    return data.results;
+  }
+
+  async getNowPlayingMovies(): Promise<TMDbMovie[]> {
+    const data = await this.fetchFromTMDb('/movie/now_playing');
+    return data.results;
+  }
+
+  async getTopRatedTVShows(): Promise<TMDbMovie[]> {
+    const data = await this.fetchFromTMDb('/tv/top_rated');
+    return data.results;
+  }
+
+  async getAiringTodayTVShows(): Promise<TMDbMovie[]> {
+    const data = await this.fetchFromTMDb('/tv/airing_today');
+    return data.results;
+  }
+
+  async getOnTheAirTVShows(): Promise<TMDbMovie[]> {
+    const data = await this.fetchFromTMDb('/tv/on_the_air');
+    return data.results;
+  }
+
+  async getDiscoverMoviesByGenre(genreId: number): Promise<TMDbMovie[]> {
+    const data = await this.fetchFromTMDb(`/discover/movie?with_genres=${genreId}`);
+    return data.results;
+  }
+
+  async getDiscoverTVByGenre(genreId: number): Promise<TMDbMovie[]> {
+    const data = await this.fetchFromTMDb(`/discover/tv?with_genres=${genreId}`);
+    return data.results;
+  }
+
+  getYouTubeTrailerUrl(key: string): string {
+    return `https://www.youtube.com/embed/${key}`;
+  }
+
   async getTrendingWithPagination(timeWindow: 'day' | 'week' = 'week', page: number = 1): Promise<{ results: TMDbMovie[], total_pages: number }> {
     const data = await this.fetchFromTMDb(`/trending/all/${timeWindow}?page=${page}`);
     return { results: data.results, total_pages: data.total_pages };

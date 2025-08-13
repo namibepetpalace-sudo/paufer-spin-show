@@ -145,6 +145,14 @@ const FavoritesPage = () => {
                     year=""
                     genre=""
                     type={favorite.media_type}
+                    movie={{
+                      id: favorite.movie_id,
+                      title: favorite.movie_title,
+                      poster_path: favorite.movie_poster,
+                      vote_average: 0,
+                      genre_ids: [],
+                      media_type: favorite.media_type
+                    }}
                   />
                 </div>
                 <Button
