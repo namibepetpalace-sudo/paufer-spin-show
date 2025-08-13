@@ -98,7 +98,7 @@ const Roulette = () => {
         
         {/* Wheel */}
         <div 
-          className="relative w-80 h-80 rounded-full overflow-hidden shadow-2xl glow-effect"
+          className="relative w-80 h-80 rounded-full overflow-hidden shadow-2xl glow-effect bg-netflix-dark border-4 border-netflix-red/30"
           style={{
             transform: `rotate(${rotation}deg)`,
             transition: isSpinning ? 'transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99)' : 'none'
@@ -106,37 +106,47 @@ const Roulette = () => {
         >
           {rouletteItems.map((item, index) => {
             const angle = (360 / rouletteItems.length) * index;
-            const nextAngle = (360 / rouletteItems.length) * (index + 1);
+            const radius = 120; // raio para posicionar as capas
+            const x = 50 + (radius / 160) * 50 * Math.cos((angle - 90) * Math.PI / 180);
+            const y = 50 + (radius / 160) * 50 * Math.sin((angle - 90) * Math.PI / 180);
             
             return (
               <div
                 key={item.id}
-                className={`absolute w-full h-full bg-gradient-to-r ${item.color}`}
+                className="absolute"
                 style={{
-                  clipPath: `polygon(50% 50%, ${50 + 50 * Math.cos((angle - 90) * Math.PI / 180)}% ${50 + 50 * Math.sin((angle - 90) * Math.PI / 180)}%, ${50 + 50 * Math.cos((nextAngle - 90) * Math.PI / 180)}% ${50 + 50 * Math.sin((nextAngle - 90) * Math.PI / 180)}%)`
+                  left: `${x}%`,
+                  top: `${y}%`,
+                  transform: `translate(-50%, -50%) rotate(${angle}deg)`,
                 }}
               >
-                <div 
-                  className="absolute flex flex-col items-center text-white text-xs font-semibold"
-                  style={{
-                    top: '25%',
-                    left: '55%',
-                    transform: `rotate(${angle + (360 / rouletteItems.length) / 2}deg)`,
-                    transformOrigin: '0 100%',
-                    width: '90px'
-                  }}
-                >
+                <div className="relative group">
                   <img 
                     src={item.poster} 
                     alt={item.title}
-                    className="w-8 h-12 object-cover rounded mb-1 shadow-lg"
+                    className="w-16 h-24 object-cover rounded-lg shadow-2xl border-2 border-white/20 group-hover:border-netflix-red transition-all duration-300"
                   />
-                  <span className="text-center leading-tight">{item.title}</span>
-                  <span className="text-xs opacity-80">({item.year})</span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div 
+                    className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-white text-xs font-semibold text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{
+                      transform: `translateX(-50%) rotate(${-angle}deg)`,
+                      width: '60px',
+                      fontSize: '10px'
+                    }}
+                  >
+                    <div className="leading-tight">{item.title}</div>
+                    <div className="text-xs opacity-80">({item.year})</div>
+                  </div>
                 </div>
               </div>
             );
           })}
+          
+          {/* Centro da roleta */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-netflix-red rounded-full shadow-lg flex items-center justify-center">
+            <Sparkles className="h-6 w-6 text-white" />
+          </div>
         </div>
       </div>
       
