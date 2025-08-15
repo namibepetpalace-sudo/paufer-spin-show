@@ -155,6 +155,7 @@ const Roulette = () => {
         onClick={spinRoulette}
         disabled={isSpinning}
         size="lg"
+        data-roulette-spin
         className="bg-netflix-red text-white border-0 hover:bg-netflix-red/90 glow-effect px-8 py-3 transition-all duration-300 hover:scale-105"
       >
         {isSpinning ? (

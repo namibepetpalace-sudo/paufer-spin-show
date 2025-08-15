@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Film, User, LogOut } from "lucide-react";
+import { Search, Film, User, LogOut, Settings, TrendingUp, Heart } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -87,8 +87,13 @@ const Header = ({ onSearchResults }: HeaderProps) => {
         </div>
 
         {/* Navigation */}
-        <nav className="hidden md:flex items-center space-x-4">
-          <Button variant="ghost" className="text-foreground hover:text-netflix-red transition-colors">
+        <nav className="hidden md:flex items-center space-x-2">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/trending')}
+            className="text-foreground hover:text-netflix-red transition-colors"
+          >
+            <TrendingUp className="h-4 w-4 mr-2" />
             Tendências
           </Button>
           <Button 
@@ -96,18 +101,29 @@ const Header = ({ onSearchResults }: HeaderProps) => {
             onClick={() => navigate('/favorites')}
             className="text-foreground hover:text-netflix-red transition-colors"
           >
+            <Heart className="h-4 w-4 mr-2" />
             Favoritos
           </Button>
           <ThemeToggle />
           
           {user ? (
             <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-card">
-                <User className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-foreground">
-                  {user.user_metadata?.display_name || user.email}
-                </span>
-              </div>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate('/profile')}
+                className="text-muted-foreground hover:text-primary"
+              >
+                <User className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate('/settings')}
+                className="text-muted-foreground hover:text-primary"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
               <Button 
                 variant="ghost" 
                 size="sm"

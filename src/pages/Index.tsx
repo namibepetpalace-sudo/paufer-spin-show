@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,13 +9,26 @@ import TrendingSection from "@/components/TrendingSection";
 import CategorySection from "@/components/CategorySection";
 import SearchResults from "@/components/SearchResults";
 import Roulette from "@/components/Roulette";
+import RecommendationSection from "@/components/RecommendationSection";
+import OnboardingFlow from "@/components/OnboardingFlow";
 import { tmdbService } from "@/lib/tmdb";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const { user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Mostrar onboarding para novos usuários
+    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+    if (!hasSeenOnboarding && !user) {
+      setShowOnboarding(true);
+    }
+  }, [user]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,9 +45,19 @@ const Index = () => {
     }
   };
 
+  const handleOnboardingClose = () => {
+    setShowOnboarding(false);
+    localStorage.setItem('hasSeenOnboarding', 'true');
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header onSearchResults={(results: any) => setSearchResults(results)} />
+      
+      <OnboardingFlow 
+        isOpen={showOnboarding} 
+        onClose={handleOnboardingClose} 
+      />
       
       <main>
         <HeroSection />
@@ -62,6 +85,7 @@ const Index = () => {
         ) : (
           /* Seções de Categorias */
           <div className="space-y-12 px-4">
+            <RecommendationSection />
             <TrendingSection />
             
             <CategorySection 
