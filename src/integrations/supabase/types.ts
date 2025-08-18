@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
@@ -49,7 +49,11 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           display_name: string | null
+          favorite_genres: number[] | null
           id: string
+          onboarding_completed: boolean | null
+          preferred_duration: string | null
+          preferred_rating: string | null
           updated_at: string
           user_id: string
         }
@@ -57,7 +61,11 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
+          favorite_genres?: number[] | null
           id?: string
+          onboarding_completed?: boolean | null
+          preferred_duration?: string | null
+          preferred_rating?: string | null
           updated_at?: string
           user_id: string
         }
@@ -65,9 +73,112 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
+          favorite_genres?: number[] | null
           id?: string
+          onboarding_completed?: boolean | null
+          preferred_duration?: string | null
+          preferred_rating?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_interactions: {
+        Row: {
+          created_at: string
+          id: string
+          interaction_data: Json | null
+          interaction_type: string
+          media_type: string
+          movie_id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interaction_data?: Json | null
+          interaction_type: string
+          media_type?: string
+          movie_id: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interaction_data?: Json | null
+          interaction_type?: string
+          media_type?: string
+          movie_id?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_ratings: {
+        Row: {
+          created_at: string
+          id: string
+          media_type: string
+          movie_id: number
+          rating: number
+          review: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          media_type?: string
+          movie_id: number
+          rating: number
+          review?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          media_type?: string
+          movie_id?: number
+          rating?: number
+          review?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      watch_history: {
+        Row: {
+          completed: boolean | null
+          id: string
+          media_type: string
+          movie_id: number
+          movie_poster: string | null
+          movie_title: string
+          rating: number | null
+          user_id: string
+          watch_time: string
+        }
+        Insert: {
+          completed?: boolean | null
+          id?: string
+          media_type?: string
+          movie_id: number
+          movie_poster?: string | null
+          movie_title: string
+          rating?: number | null
+          user_id: string
+          watch_time?: string
+        }
+        Update: {
+          completed?: boolean | null
+          id?: string
+          media_type?: string
+          movie_id?: number
+          movie_poster?: string | null
+          movie_title?: string
+          rating?: number | null
+          user_id?: string
+          watch_time?: string
         }
         Relationships: []
       }

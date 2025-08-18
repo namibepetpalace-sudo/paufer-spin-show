@@ -11,24 +11,35 @@ import SearchResults from "@/components/SearchResults";
 import Roulette from "@/components/Roulette";
 import RecommendationSection from "@/components/RecommendationSection";
 import OnboardingFlow from "@/components/OnboardingFlow";
-import { tmdbService } from "@/lib/tmdb";
+import { tmdbService, TMDbMovie } from "@/lib/tmdb";
 import { useAuth } from "@/hooks/useAuth";
+import { usePersonalization } from "@/hooks/usePersonalization";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<TMDbMovie[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const { user } = useAuth();
+  const { needsOnboarding, trackInteraction } = usePersonalization();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Mostrar onboarding para novos usuários
-    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
-    if (!hasSeenOnboarding && !user) {
+    // Mostrar onboarding para usuários logados que não completaram
+    if (needsOnboarding) {
       setShowOnboarding(true);
     }
-  }, [user]);
+    // Para usuários não logados, mostrar onboarding promocional na primeira visita
+    else if (!user) {
+      const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+      if (!hasSeenOnboarding) {
+        const timer = setTimeout(() => {
+          setShowOnboarding(true);
+        }, 2000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [user, needsOnboarding]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +49,16 @@ const Index = () => {
     try {
       const results = await tmdbService.searchMovies(searchQuery);
       setSearchResults(results);
+
+      // Registra busca como interação do usuário
+      if (user && results.length > 0) {
+        await trackInteraction({
+          movie_id: results[0].id,
+          media_type: results[0].media_type || 'movie',
+          interaction_type: 'search',
+          interaction_data: { query: searchQuery, resultsCount: results.length }
+        });
+      }
     } catch (error) {
       console.error("Erro na busca:", error);
     } finally {
@@ -47,7 +68,10 @@ const Index = () => {
 
   const handleOnboardingClose = () => {
     setShowOnboarding(false);
-    localStorage.setItem('hasSeenOnboarding', 'true');
+    // Para usuários não logados, marca como visto
+    if (!user) {
+      localStorage.setItem('hasSeenOnboarding', 'true');
+    }
   };
 
   return (

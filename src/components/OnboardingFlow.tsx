@@ -1,33 +1,39 @@
 import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Heart, Star, Popcorn, Tv, Zap, CheckCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Sparkles, ChevronRight, ChevronLeft, Check, Popcorn, Star, Heart, Zap, CheckCircle, Tv } from "lucide-react";
+import { usePersonalization } from "@/hooks/usePersonalization";
+import { useToast } from "@/hooks/use-toast";
 
 interface OnboardingFlowProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+// Gêneros com IDs do TMDb
+const genres = [
+  { id: 28, name: 'Ação', emoji: '💥' },
+  { id: 35, name: 'Comédia', emoji: '😂' },
+  { id: 18, name: 'Drama', emoji: '🎭' },
+  { id: 27, name: 'Terror', emoji: '😱' },
+  { id: 10749, name: 'Romance', emoji: '💕' },
+  { id: 878, name: 'Ficção Científica', emoji: '🚀' },
+  { id: 53, name: 'Suspense', emoji: '🔪' },
+  { id: 14, name: 'Fantasia', emoji: '🧙‍♂️' },
+  { id: 16, name: 'Animação', emoji: '🎨' },
+  { id: 99, name: 'Documentário', emoji: '📽️' },
+  { id: 12, name: 'Aventura', emoji: '🗺️' },
+  { id: 80, name: 'Crime', emoji: '🕵️‍♂️' }
+];
+
 const OnboardingFlow = ({ isOpen, onClose }: OnboardingFlowProps) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-  const navigate = useNavigate();
-
-  const genres = [
-    { id: 'action', name: 'Ação', emoji: '💥' },
-    { id: 'comedy', name: 'Comédia', emoji: '😂' },
-    { id: 'drama', name: 'Drama', emoji: '🎭' },
-    { id: 'horror', name: 'Terror', emoji: '😱' },
-    { id: 'romance', name: 'Romance', emoji: '💕' },
-    { id: 'scifi', name: 'Ficção Científica', emoji: '🚀' },
-    { id: 'thriller', name: 'Suspense', emoji: '🔪' },
-    { id: 'fantasy', name: 'Fantasia', emoji: '🧙‍♂️' },
-    { id: 'animation', name: 'Animação', emoji: '🎨' },
-    { id: 'documentary', name: 'Documentário', emoji: '📽️' }
-  ];
+  const [selectedGenres, setSelectedGenres] = useState<number[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { completeOnboarding } = usePersonalization();
+  const { toast } = useToast();
 
   const steps = [
     {
@@ -130,7 +136,7 @@ const OnboardingFlow = ({ isOpen, onClose }: OnboardingFlowProps) => {
           <div className="grid grid-cols-2 gap-4 mt-6">
             <Button
               variant="outline"
-              onClick={() => navigate('/trending')}
+              onClick={() => window.location.href = '/trending'}
               className="flex items-center space-x-2"
             >
               <Tv className="h-4 w-4" />
@@ -156,7 +162,18 @@ const OnboardingFlow = ({ isOpen, onClose }: OnboardingFlowProps) => {
     }
   ];
 
-  const nextStep = () => {
+  const nextStep = async () => {
+    if (currentStep === 1) { // Genre selection step
+      if (selectedGenres.length < 3) {
+        toast({
+          title: "Selecione pelo menos 3 gêneros",
+          description: "Isso nos ajuda a fazer recomendações melhores para você.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
@@ -165,6 +182,34 @@ const OnboardingFlow = ({ isOpen, onClose }: OnboardingFlowProps) => {
   const prevStep = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleComplete = async () => {
+    setLoading(true);
+    try {
+      const success = await completeOnboarding(selectedGenres);
+      if (success) {
+        toast({
+          title: "Onboarding concluído!",
+          description: "Suas preferências foram salvas. Agora você receberá recomendações personalizadas.",
+        });
+        onClose();
+      } else {
+        toast({
+          title: "Erro ao salvar preferências",
+          description: "Tente novamente em alguns instantes.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro ao salvar suas preferências.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -178,9 +223,9 @@ const OnboardingFlow = ({ isOpen, onClose }: OnboardingFlowProps) => {
             <span>{steps[currentStep].title}</span>
             <Badge variant="outline">{currentStep + 1} de {steps.length}</Badge>
           </DialogTitle>
-          <DialogDescription>
+          <p className="text-muted-foreground">
             {steps[currentStep].description}
-          </DialogDescription>
+          </p>
         </DialogHeader>
 
         <div className="py-6">
@@ -193,6 +238,7 @@ const OnboardingFlow = ({ isOpen, onClose }: OnboardingFlowProps) => {
             onClick={prevStep}
             disabled={currentStep === 0}
           >
+            <ChevronLeft className="h-4 w-4 mr-2" />
             Anterior
           </Button>
           
@@ -208,15 +254,21 @@ const OnboardingFlow = ({ isOpen, onClose }: OnboardingFlowProps) => {
           </div>
 
           {currentStep === steps.length - 1 ? (
-            <Button onClick={onClose}>
-              Começar a Explorar
+            <Button 
+              onClick={handleComplete} 
+              disabled={loading || selectedGenres.length < 3}
+              className="flex-1 max-w-48"
+            >
+              <Check className="h-4 w-4 mr-2" />
+              {loading ? "Salvando..." : "Finalizar"}
             </Button>
           ) : (
-            <Button
-              onClick={nextStep}
+            <Button 
+              onClick={nextStep} 
               disabled={!canProceed}
             >
               Próximo
+              <ChevronRight className="h-4 w-4 ml-2" />
             </Button>
           )}
         </div>

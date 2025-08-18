@@ -5,6 +5,7 @@ import { Sparkles, RefreshCw, Eye, Clock } from "lucide-react";
 import MovieCard from "./MovieCard";
 import { tmdbService, TMDbMovie, TMDbGenre } from "@/lib/tmdb";
 import { useAuth } from "@/hooks/useAuth";
+import { usePersonalization } from "@/hooks/usePersonalization";
 
 const RecommendationSection = () => {
   const [recommendations, setRecommendations] = useState<TMDbMovie[]>([]);
@@ -12,6 +13,7 @@ const RecommendationSection = () => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuth();
+  const { preferences, getPersonalizedRecommendations, addToWatchHistory } = usePersonalization();
 
   useEffect(() => {
     loadRecommendations();
@@ -26,21 +28,56 @@ const RecommendationSection = () => {
       ]);
       setGenres([...movieGenres, ...tvGenres]);
 
-      // Mistura recomendações de diferentes categorias para personalização
-      const [popular, topRated, trending] = await Promise.all([
-        tmdbService.getPopularMovies(),
-        tmdbService.getTopRatedMovies(),
-        tmdbService.getTrendingWithPagination('week', 1)
-      ]);
+      let finalRecommendations: TMDbMovie[] = [];
 
-      // Algoritmo simples de recomendação: mistura das diferentes categorias
-      const mixed = [
-        ...popular.slice(0, 3),
-        ...topRated.slice(0, 3),
-        ...trending.results.slice(0, 3)
-      ].sort(() => Math.random() - 0.5).slice(0, 6);
+      // Se o usuário tem preferências, usar algoritmo personalizado
+      if (user && preferences?.favorite_genres?.length) {
+        const personalizedIds = await getPersonalizedRecommendations();
+        
+        // Buscar filmes dos gêneros favoritos
+        const genreBasedMovies = await Promise.all(
+          preferences.favorite_genres.slice(0, 3).map(genreId => 
+            tmdbService.getMoviesByGenre(genreId)
+          )
+        );
 
-      setRecommendations(mixed);
+        // Combinar filmes baseados em gêneros com comportamento
+        const genreMovies = genreBasedMovies.flat().slice(0, 8);
+        
+        // Filtrar filmes já vistos e misturar
+        const unseenMovies = genreMovies.filter(movie => 
+          !personalizedIds.includes(movie.id)
+        );
+
+        finalRecommendations = unseenMovies
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 6);
+      }
+
+      // Fallback para usuários sem preferências ou quando não há filmes suficientes
+      if (finalRecommendations.length < 6) {
+        const [popular, topRated, trending] = await Promise.all([
+          tmdbService.getPopularMovies(),
+          tmdbService.getTopRatedMovies(),
+          tmdbService.getTrendingWithPagination('week', 1)
+        ]);
+
+        const mixed = [
+          ...popular.slice(0, 3),
+          ...topRated.slice(0, 3),
+          ...trending.results.slice(0, 3)
+        ].sort(() => Math.random() - 0.5);
+
+        // Completar com filmes genéricos se necessário
+        finalRecommendations = [
+          ...finalRecommendations,
+          ...mixed.filter(movie => 
+            !finalRecommendations.some(rec => rec.id === movie.id)
+          )
+        ].slice(0, 6);
+      }
+
+      setRecommendations(finalRecommendations);
     } catch (error) {
       console.error('Erro ao carregar recomendações:', error);
     } finally {
@@ -167,6 +204,7 @@ const RecommendationSection = () => {
                   genre={tmdbService.getGenreName(movie.genre_ids, genres)}
                   type={tmdbService.getMediaType(movie)}
                   movie={movie}
+                  onView={() => addToWatchHistory(movie)}
                 />
               </div>
             ))

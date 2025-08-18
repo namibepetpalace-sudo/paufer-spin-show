@@ -48,6 +48,11 @@ class TMDbService {
     return data.results;
   }
 
+  async getMoviesByGenre(genreId: number, page: number = 1): Promise<TMDbMovie[]> {
+    const data = await this.fetchFromTMDb(`/discover/movie?with_genres=${genreId}&page=${page}&sort_by=popularity.desc`);
+    return data.results;
+  }
+
   async getMovieGenres(): Promise<TMDbGenre[]> {
     const data = await this.fetchFromTMDb('/genre/movie/list');
     return data.genres;

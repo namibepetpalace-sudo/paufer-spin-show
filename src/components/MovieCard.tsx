@@ -15,9 +15,10 @@ interface MovieCardProps {
   genre: string;
   type: 'movie' | 'tv';
   movie: TMDbMovie;
+  onView?: () => void;
 }
 
-const MovieCard = ({ id, title, posterPath, rating, year, genre, type, movie }: MovieCardProps) => {
+const MovieCard = ({ id, title, posterPath, rating, year, genre, type, movie, onView }: MovieCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const imageUrl = posterPath 
@@ -26,6 +27,7 @@ const MovieCard = ({ id, title, posterPath, rating, year, genre, type, movie }: 
 
   const handleCardClick = () => {
     setIsModalOpen(true);
+    onView?.(); // Registra visualização
   };
 
   return (
