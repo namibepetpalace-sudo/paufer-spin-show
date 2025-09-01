@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import SearchBar from "@/components/SearchBar";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import TrendingSection from "@/components/TrendingSection";
@@ -88,19 +86,12 @@ const Index = () => {
         
         {/* Barra de pesquisa centralizada */}
         <section className="px-4 py-8">
-          <div className="max-w-2xl mx-auto">
-            <form onSubmit={handleSearch} className="flex gap-2">
-              <Input
-                type="text"
-                placeholder="Pesquise por filmes e séries..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1"
-              />
-              <Button type="submit" disabled={isSearching}>
-                <Search className="h-4 w-4" />
-              </Button>
-            </form>
+          <div className="container mx-auto max-w-2xl">
+            <SearchBar 
+              onSearchResults={(results: any) => setSearchResults(results)}
+              placeholder="O que você quer assistir hoje?"
+              className="w-full"
+            />
           </div>
         </section>
 

@@ -1,11 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search, Film, User, LogOut, Settings, TrendingUp, Heart } from "lucide-react";
+import { Film, User, LogOut, Settings, TrendingUp, Heart } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import SearchBar from "@/components/SearchBar";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { tmdbService } from "@/lib/tmdb";
 
 interface HeaderProps {
   onSearchResults?: (results: any[]) => void;
@@ -14,37 +12,6 @@ interface HeaderProps {
 const Header = ({ onSearchResults }: HeaderProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
-
-  const handleSearch = async (query: string) => {
-    if (!query.trim()) {
-      onSearchResults?.([]);
-      return;
-    }
-
-    setIsSearching(true);
-    try {
-      const results = await tmdbService.searchMovies(query);
-      onSearchResults?.(results.slice(0, 12));
-    } catch (error) {
-      console.error('Erro na busca:', error);
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-    
-    // Debounce search
-    const timeoutId = setTimeout(() => {
-      handleSearch(value);
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  };
 
   const handleLogin = () => {
     navigate("/auth");
@@ -70,20 +37,10 @@ const Header = ({ onSearchResults }: HeaderProps) => {
 
         {/* Search Bar */}
         <div className="flex-1 max-w-md mx-8">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar filmes e séries..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className="pl-10 bg-netflix-dark border-netflix-gray focus:ring-netflix-red focus:border-netflix-red"
-            />
-            {isSearching && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
-              </div>
-            )}
-          </div>
+          <SearchBar 
+            onSearchResults={onSearchResults}
+            placeholder="Buscar filmes e séries..."
+          />
         </div>
 
         {/* Navigation */}
