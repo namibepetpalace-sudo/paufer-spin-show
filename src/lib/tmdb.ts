@@ -1,4 +1,4 @@
-const TMDB_API_KEY = '026a48f6c5e85101159fc283a52963ff';
+const TMDB_API_KEY = '2dca580c2a14b55200e784d157207b4d';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
@@ -21,11 +21,21 @@ export interface TMDbGenre {
 
 class TMDbService {
   private async fetchFromTMDb(endpoint: string): Promise<any> {
-    const response = await fetch(`${TMDB_BASE_URL}${endpoint}?api_key=${TMDB_API_KEY}&language=pt-BR`);
-    if (!response.ok) {
-      throw new Error(`TMDb API error: ${response.statusText}`);
+    try {
+      const url = `${TMDB_BASE_URL}${endpoint}${endpoint.includes('?') ? '&' : '?'}api_key=${TMDB_API_KEY}&language=pt-BR`;
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        console.error(`TMDb API error: ${response.status} - ${response.statusText}`);
+        throw new Error(`TMDb API error: ${response.status} - ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching from TMDb:', error);
+      throw error;
     }
-    return response.json();
   }
 
   async getTrending(timeWindow: 'day' | 'week' = 'week'): Promise<TMDbMovie[]> {
