@@ -59,6 +59,7 @@ export default {
 				'netflix-darker': 'hsl(var(--netflix-darker))',
 				'netflix-gray': 'hsl(var(--netflix-gray))',
 				'netflix-light-gray': 'hsl(var(--netflix-light-gray))',
+				'streaming-blue': 'hsl(var(--streaming-blue))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

@@ -45,6 +45,7 @@
     --netflix-darker: 0 0% 4%;
     --netflix-gray: 0 0% 18%;
     --netflix-light-gray: 0 0% 75%; /* Better contrast */
+    --streaming-blue: 210 100% 60%; /* Complementary streaming blue */
     
     /* Netflix Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(348 97% 39%), hsl(0 0% 8%));
