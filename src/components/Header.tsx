@@ -9,9 +9,10 @@ import { useNavigate } from "react-router-dom";
 interface HeaderProps {
   onSearchResults?: (results: any[]) => void;
   onMovieSelect?: (movie: any) => void;
+  onApplyFilters?: (filters: any) => void;
 }
 
-const Header = ({ onSearchResults, onMovieSelect }: HeaderProps) => {
+const Header = ({ onSearchResults, onMovieSelect, onApplyFilters }: HeaderProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -48,9 +49,9 @@ const Header = ({ onSearchResults, onMovieSelect }: HeaderProps) => {
           </div>
           <SearchFilters 
             onFiltersChange={(filters) => {
-              // Apply filters to search results
-              console.log('Filters applied:', filters);
+              // Optional: Real-time filter preview
             }}
+            onApplyFilters={onApplyFilters}
           />
         </div>
 

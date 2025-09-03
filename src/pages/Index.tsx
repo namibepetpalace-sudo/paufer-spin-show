@@ -17,10 +17,12 @@ import { usePersonalization } from "@/hooks/usePersonalization";
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<TMDbMovie[]>([]);
+  const [filteredResults, setFilteredResults] = useState<TMDbMovie[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<TMDbMovie | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<any>(null);
   const { user } = useAuth();
   const { needsOnboarding, trackInteraction } = usePersonalization();
   const navigate = useNavigate();
@@ -80,11 +82,85 @@ const Index = () => {
     setIsModalOpen(true);
   };
 
+  const handleApplyFilters = async (filters: any) => {
+    setActiveFilters(filters);
+    setIsSearching(true);
+    
+    try {
+      let results: TMDbMovie[] = [];
+      
+      // Apply filters based on selected criteria
+      if (filters.mediaType === 'movie') {
+        if (filters.category === 'popular') {
+          results = await tmdbService.getPopularMovies();
+        } else if (filters.category === 'top_rated') {
+          results = await tmdbService.getTopRatedMovies();
+        } else if (filters.category === 'now_playing') {
+          results = await tmdbService.getNowPlayingMovies();
+        } else if (filters.category === 'upcoming') {
+          results = await tmdbService.getUpcomingMovies();
+        } else {
+          results = await tmdbService.getPopularMovies();
+        }
+      } else if (filters.mediaType === 'tv') {
+        if (filters.category === 'popular') {
+          results = await tmdbService.getPopularTVShows();
+        } else if (filters.category === 'top_rated') {
+          results = await tmdbService.getTopRatedTVShows();
+        } else if (filters.category === 'now_playing') {
+          results = await tmdbService.getAiringTodayTVShows();
+        } else {
+          results = await tmdbService.getPopularTVShows();
+        }
+      } else if (filters.mediaType === 'anime') {
+        // Search for anime content
+        results = await tmdbService.searchMovies('anime');
+      } else {
+        // If no specific media type, get popular movies as default
+        results = await tmdbService.getPopularMovies();
+      }
+
+      // Apply additional filters
+      if (filters.genre) {
+        results = results.filter(item => 
+          item.genre_ids?.includes(parseInt(filters.genre))
+        );
+      }
+
+      if (filters.year) {
+        results = results.filter(item => {
+          const releaseYear = tmdbService.formatReleaseYear(tmdbService.getReleaseDate(item));
+          return releaseYear === filters.year;
+        });
+      }
+
+      if (filters.rating) {
+        const minRating = parseFloat(filters.rating);
+        results = results.filter(item => 
+          item.vote_average >= minRating
+        );
+      }
+
+      setFilteredResults(results);
+      setSearchResults([]); // Clear search results when showing filtered results
+      
+    } catch (error) {
+      console.error("Erro ao aplicar filtros:", error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header 
-        onSearchResults={(results: any) => setSearchResults(results)}
+        onSearchResults={(results: any) => {
+          setSearchResults(results);
+          setFilteredResults([]); // Clear filtered results when new search is made
+          setActiveFilters(null);
+        }}
         onMovieSelect={handleMovieSelect}
+        onApplyFilters={handleApplyFilters}
       />
       
       <OnboardingFlow 
@@ -98,6 +174,20 @@ const Index = () => {
 
         {searchResults.length > 0 ? (
           <SearchResults results={searchResults} genres={[]} />
+        ) : filteredResults.length > 0 ? (
+          <div className="px-4">
+            <div className="container mx-auto">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-foreground mb-2">
+                  Resultados dos Filtros
+                </h2>
+                <p className="text-muted-foreground">
+                  {filteredResults.length} resultado(s) encontrado(s)
+                </p>
+              </div>
+              <SearchResults results={filteredResults} genres={[]} />
+            </div>
+          </div>
         ) : (
           /* Seções de Categorias */
           <div className="space-y-12 px-4">

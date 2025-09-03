@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 
 interface SearchFiltersProps {
   onFiltersChange?: (filters: SearchFilters) => void;
+  onApplyFilters?: (filters: SearchFilters) => void;
   className?: string;
 }
 
@@ -20,7 +21,7 @@ export interface SearchFilters {
   category?: string;
 }
 
-const SearchFilters = ({ onFiltersChange, className = "" }: SearchFiltersProps) => {
+const SearchFilters = ({ onFiltersChange, onApplyFilters, className = "" }: SearchFiltersProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({});
 
@@ -79,6 +80,11 @@ const SearchFilters = ({ onFiltersChange, className = "" }: SearchFiltersProps) 
   const clearAllFilters = () => {
     setFilters({});
     onFiltersChange?.({});
+  };
+
+  const applyFilters = () => {
+    onApplyFilters?.(filters);
+    setIsOpen(false);
   };
 
   const activeFiltersCount = Object.keys(filters).length;
@@ -300,6 +306,17 @@ const SearchFilters = ({ onFiltersChange, className = "" }: SearchFiltersProps) 
                 </div>
               </>
             )}
+
+            {/* Apply Filters Button */}
+            <div className="pt-4">
+              <Button 
+                onClick={applyFilters}
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                disabled={activeFiltersCount === 0}
+              >
+                {activeFiltersCount > 0 ? `Aplicar ${activeFiltersCount} Filtros` : 'Selecione Filtros'}
+              </Button>
+            </div>
           </div>
         </PopoverContent>
       </Popover>
