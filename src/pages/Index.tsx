@@ -9,6 +9,7 @@ import SearchResults from "@/components/SearchResults";
 import Roulette from "@/components/Roulette";
 import RecommendationSection from "@/components/RecommendationSection";
 import OnboardingFlow from "@/components/OnboardingFlow";
+import MovieModal from "@/components/MovieModal";
 import { tmdbService, TMDbMovie } from "@/lib/tmdb";
 import { useAuth } from "@/hooks/useAuth";
 import { usePersonalization } from "@/hooks/usePersonalization";
@@ -18,6 +19,8 @@ const Index = () => {
   const [searchResults, setSearchResults] = useState<TMDbMovie[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState<TMDbMovie | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useAuth();
   const { needsOnboarding, trackInteraction } = usePersonalization();
   const navigate = useNavigate();
@@ -72,9 +75,17 @@ const Index = () => {
     }
   };
 
+  const handleMovieSelect = (movie: TMDbMovie) => {
+    setSelectedMovie(movie);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <Header onSearchResults={(results: any) => setSearchResults(results)} />
+      <Header 
+        onSearchResults={(results: any) => setSearchResults(results)}
+        onMovieSelect={handleMovieSelect}
+      />
       
       <OnboardingFlow 
         isOpen={showOnboarding} 
@@ -89,6 +100,7 @@ const Index = () => {
           <div className="container mx-auto max-w-2xl">
             <SearchBar 
               onSearchResults={(results: any) => setSearchResults(results)}
+              onMovieSelect={handleMovieSelect}
               placeholder="O que você quer assistir hoje?"
               className="w-full"
             />
@@ -158,6 +170,13 @@ const Index = () => {
           </div>
         )}
       </main>
+      
+      {/* Movie Modal */}
+      <MovieModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        movie={selectedMovie}
+      />
     </div>
   );
 };

@@ -116,7 +116,7 @@ const SearchBar = ({
     setShowSuggestions(true);
   };
 
-  const handleSuggestionClick = (suggestion: SearchSuggestion) => {
+  const handleSuggestionClick = async (suggestion: SearchSuggestion) => {
     // Add to recent searches
     const newRecentSearches = [suggestion.title, ...recentSearches.filter(s => s !== suggestion.title)].slice(0, 5);
     setRecentSearches(newRecentSearches);
@@ -126,16 +126,26 @@ const SearchBar = ({
     setQuery("");
     setShowSuggestions(false);
     
-    // Notify parent component
-    if (onMovieSelect) {
-      onMovieSelect({
+    // Get full movie data for the modal
+    try {
+      const fullMovie: TMDbMovie = {
         id: suggestion.id,
-        title: suggestion.title,
-        posterPath: suggestion.posterPath,
-        rating: suggestion.rating,
-        year: suggestion.year,
-        type: suggestion.type
-      });
+        title: suggestion.type === 'movie' ? suggestion.title : undefined,
+        name: suggestion.type === 'tv' ? suggestion.title : undefined,
+        poster_path: suggestion.posterPath,
+        vote_average: suggestion.rating || 0,
+        release_date: suggestion.type === 'movie' ? `${suggestion.year}-01-01` : undefined,
+        first_air_date: suggestion.type === 'tv' ? `${suggestion.year}-01-01` : undefined,
+        genre_ids: [],
+        media_type: suggestion.type
+      };
+      
+      // Notify parent component with full movie object
+      if (onMovieSelect) {
+        onMovieSelect(fullMovie);
+      }
+    } catch (error) {
+      console.error('Error creating movie object:', error);
     }
   };
 
@@ -259,7 +269,7 @@ const SearchBar = ({
                         {suggestion.title}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {suggestion.type === 'movie' ? 'Filme' : 'Série'} • {suggestion.year} • ⭐ {suggestion.rating.toFixed(1)}
+                        {suggestion.type === 'movie' ? 'Filme' : 'Série'} • {suggestion.year} • ⭐ {suggestion.rating ? suggestion.rating.toFixed(1) : 'N/A'}
                       </p>
                     </div>
                   </button>
