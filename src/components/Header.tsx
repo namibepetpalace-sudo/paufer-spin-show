@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Film, User, LogOut, Settings, TrendingUp, Heart } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import SearchBar from "@/components/SearchBar";
+import SearchFilters from "@/components/SearchFilters";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
@@ -36,12 +37,20 @@ const Header = ({ onSearchResults, onMovieSelect }: HeaderProps) => {
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="flex-1 max-w-md mx-8">
-          <SearchBar 
-            onSearchResults={onSearchResults}
-            onMovieSelect={onMovieSelect}
-            placeholder="Buscar filmes e séries..."
+        {/* Search Bar with Filters */}
+        <div className="flex-1 max-w-2xl mx-8 flex items-center gap-3">
+          <div className="flex-1">
+            <SearchBar 
+              onSearchResults={onSearchResults}
+              onMovieSelect={onMovieSelect}
+              placeholder="Buscar filmes, séries, animes, doramas..."
+            />
+          </div>
+          <SearchFilters 
+            onFiltersChange={(filters) => {
+              // Apply filters to search results
+              console.log('Filters applied:', filters);
+            }}
           />
         </div>
 

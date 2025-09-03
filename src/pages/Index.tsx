@@ -95,17 +95,6 @@ const Index = () => {
       <main>
         <HeroSection />
         
-        {/* Barra de pesquisa centralizada */}
-        <section className="px-4 py-8">
-          <div className="container mx-auto max-w-2xl">
-            <SearchBar 
-              onSearchResults={(results: any) => setSearchResults(results)}
-              onMovieSelect={handleMovieSelect}
-              placeholder="O que você quer assistir hoje?"
-              className="w-full"
-            />
-          </div>
-        </section>
 
         {searchResults.length > 0 ? (
           <SearchResults results={searchResults} genres={[]} />
