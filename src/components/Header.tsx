@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Film, User, LogOut, Settings, TrendingUp, Heart } from "lucide-react";
+import { Film, User, LogOut, Settings, TrendingUp, Heart, Bookmark } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import SearchBar from "@/components/SearchBar";
 import SearchFilters from "@/components/SearchFilters";
@@ -73,6 +73,16 @@ const Header = ({ onSearchResults, onMovieSelect, onApplyFilters }: HeaderProps)
             <Heart className="h-4 w-4 mr-2" />
             Favoritos
           </Button>
+          {user && (
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate('/watchlist')}
+              className="text-foreground hover:text-netflix-red transition-colors"
+            >
+              <Bookmark className="h-4 w-4 mr-2" />
+              Watchlist
+            </Button>
+          )}
           <ThemeToggle />
           
           {user ? (

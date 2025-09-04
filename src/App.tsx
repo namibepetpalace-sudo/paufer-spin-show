@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import AuthPage from "./components/Auth/AuthPage";
 import MovieDetails from "./pages/MovieDetails";
 import FavoritesPage from "./pages/FavoritesPage";
+import WatchlistPage from "./pages/WatchlistPage";
 import TrendingPage from "./pages/TrendingPage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/movie/:id" element={<MovieDetails type="movie" />} />
               <Route path="/tv/:id" element={<MovieDetails type="tv" />} />
               <Route path="/favorites" element={<FavoritesPage />} />
+              <Route path="/watchlist" element={<WatchlistPage />} />
               <Route path="/trending" element={<TrendingPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/settings" element={<SettingsPage />} />

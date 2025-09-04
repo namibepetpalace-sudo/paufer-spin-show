@@ -1,167 +1,105 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useFavorites } from "@/hooks/useFavorites";
 import Header from "@/components/Header";
 import MovieCard from "@/components/MovieCard";
 import { Button } from "@/components/ui/button";
-import { Heart, ArrowLeft } from "lucide-react";
-
-interface Favorite {
-  id: string;
-  movie_id: number;
-  movie_title: string;
-  movie_poster: string | null;
-  media_type: 'movie' | 'tv';
-  created_at: string;
-}
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Heart, ArrowLeft, Trash2 } from "lucide-react";
+import { tmdbService, TMDbMovie } from "@/lib/tmdb";
 
 const FavoritesPage = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { favorites, loading, removeFromFavorites } = useFavorites();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [favorites, setFavorites] = useState<Favorite[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
-      navigate('/auth');
-      return;
+    if (!authLoading && !user) {
+      navigate('/');
     }
+  }, [user, authLoading, navigate]);
 
-    const loadFavorites = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('favorites')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        setFavorites((data || []) as Favorite[]);
-      } catch (error) {
-        console.error('Erro ao carregar favoritos:', error);
-        toast({
-          title: "Erro",
-          description: "Não foi possível carregar seus favoritos.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadFavorites();
-  }, [user, navigate, toast]);
-
-  const handleMovieClick = (favorite: Favorite) => {
-    navigate(`/${favorite.media_type}/${favorite.movie_id}`);
-  };
-
-  const handleRemoveFavorite = async (favoriteId: string) => {
-    try {
-      const { error } = await supabase
-        .from('favorites')
-        .delete()
-        .eq('id', favoriteId);
-
-      if (error) throw error;
-
-      setFavorites(prev => prev.filter(fav => fav.id !== favoriteId));
-      toast({
-        title: "Removido dos favoritos",
-        description: "Item removido com sucesso.",
-      });
-    } catch (error) {
-      console.error('Erro ao remover favorito:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível remover o item.",
-        variant: "destructive",
-      });
-    }
-  };
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   if (!user) {
     return null;
   }
+
+  const handleRemove = async (movieId: number, mediaType: string) => {
+    await removeFromFavorites(movieId, mediaType);
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/')}
-              className="p-2"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div className="flex items-center space-x-2">
-              <Heart className="h-6 w-6 text-red-500 fill-current" />
-              <h1 className="text-3xl font-bold">Meus Favoritos</h1>
+        <div className="flex items-center gap-4 mb-6">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div className="flex items-center gap-2">
+            <Heart className="h-6 w-6 text-red-500 fill-current" />
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Meus Favoritos</h1>
+              <p className="text-muted-foreground">
+                {favorites.length} {favorites.length === 1 ? 'favorito' : 'favoritos'}
+              </p>
             </div>
-          </div>
-          <div className="text-sm text-muted-foreground">
-            {favorites.length} {favorites.length === 1 ? 'item' : 'itens'}
           </div>
         </div>
 
-        {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-muted rounded-lg h-64 mb-3"></div>
-                <div className="h-4 bg-muted rounded mb-2"></div>
-                <div className="h-3 bg-muted rounded w-2/3"></div>
-              </div>
-            ))}
-          </div>
-        ) : favorites.length === 0 ? (
-          <div className="text-center py-16">
-            <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold mb-2">Nenhum favorito ainda</h2>
-            <p className="text-muted-foreground mb-6">
-              Comece adicionando filmes e séries aos seus favoritos!
+        {favorites.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16">
+            <div className="text-6xl mb-4">❤️</div>
+            <h2 className="text-xl font-semibold mb-2 text-foreground">Nenhum favorito ainda</h2>
+            <p className="text-muted-foreground mb-6 text-center max-w-md">
+              Adicione filmes e séries aos seus favoritos para criar sua coleção pessoal!
             </p>
             <Button onClick={() => navigate('/')}>
-              Explorar conteúdo
+              Explorar Catálogo
             </Button>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {favorites.map((favorite) => (
-              <div key={favorite.id} className="relative">
-                <div onClick={() => handleMovieClick(favorite)}>
-                  <MovieCard
-                    id={favorite.movie_id}
-                    title={favorite.movie_title}
-                    posterPath={favorite.movie_poster}
-                    rating={0}
-                    year=""
-                    genre=""
-                    type={favorite.media_type}
-                    movie={{
-                      id: favorite.movie_id,
-                      title: favorite.movie_title,
-                      poster_path: favorite.movie_poster,
-                      vote_average: 0,
-                      genre_ids: [],
-                      media_type: favorite.media_type
-                    }}
-                  />
-                </div>
+            {favorites.map((item) => (
+              <div key={item.id} className="relative group">
+                <MovieCard
+                  id={item.movie_id}
+                  title={item.movie_title}
+                  posterPath={item.movie_poster}
+                  rating={0}
+                  year=""
+                  genre=""
+                  type={item.media_type as 'movie' | 'tv'}
+                  movie={{
+                    id: item.movie_id,
+                    title: item.movie_title,
+                    poster_path: item.movie_poster,
+                    vote_average: 0,
+                    genre_ids: [],
+                    media_type: item.media_type as 'movie' | 'tv'
+                  }}
+                />
                 <Button
-                  size="sm"
                   variant="destructive"
-                  onClick={() => handleRemoveFavorite(favorite.id)}
-                  className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  size="sm"
+                  onClick={() => handleRemove(item.movie_id, item.media_type)}
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                 >
-                  <Heart className="h-4 w-4 fill-current" />
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             ))}

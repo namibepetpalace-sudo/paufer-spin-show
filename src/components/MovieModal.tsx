@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Calendar, Clock, Heart, X } from "lucide-react";
+import { Star, Calendar, Clock, X } from "lucide-react";
 import { tmdbService, TMDbMovie, TMDbGenre } from "@/lib/tmdb";
 import WatchProviders from "./WatchProviders";
+import FavoriteButton from "./FavoriteButton";
+import WatchlistButton from "./WatchlistButton";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -20,15 +22,13 @@ const MovieModal = ({ isOpen, onClose, movie }: MovieModalProps) => {
   const [genres, setGenres] = useState<TMDbGenre[]>([]);
   const [trailerKey, setTrailerKey] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
     if (movie && isOpen) {
       loadMovieDetails();
-      checkIfFavorite();
     }
-  }, [movie, isOpen, user]);
+  }, [movie, isOpen]);
 
   const loadMovieDetails = async () => {
     if (!movie) return;
@@ -64,62 +64,6 @@ const MovieModal = ({ isOpen, onClose, movie }: MovieModalProps) => {
       toast.error("Erro ao carregar detalhes do filme");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const checkIfFavorite = async () => {
-    if (!user || !movie) return;
-    
-    try {
-      const { data } = await supabase
-        .from('favorites')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('movie_id', movie.id)
-        .single();
-      
-      setIsFavorite(!!data);
-    } catch (error) {
-      // Item não está nos favoritos
-      setIsFavorite(false);
-    }
-  };
-
-  const toggleFavorite = async () => {
-    if (!user) {
-      toast.error("Faça login para adicionar aos favoritos");
-      return;
-    }
-
-    if (!movie) return;
-
-    try {
-      if (isFavorite) {
-        await supabase
-          .from('favorites')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('movie_id', movie.id);
-        
-        setIsFavorite(false);
-        toast.success("Removido dos favoritos");
-      } else {
-        await supabase
-          .from('favorites')
-          .insert({
-            user_id: user.id,
-            movie_id: movie.id,
-            movie_title: tmdbService.getTitle(movie),
-            movie_poster: movie.poster_path,
-            media_type: tmdbService.getMediaType(movie)
-          });
-        
-        setIsFavorite(true);
-        toast.success("Adicionado aos favoritos");
-      }
-    } catch (error) {
-      console.error("Erro ao atualizar favoritos:", error);
-      toast.error("Erro ao atualizar favoritos");
     }
   };
 
@@ -199,10 +143,18 @@ const MovieModal = ({ isOpen, onClose, movie }: MovieModalProps) => {
                 )}
 
                 <div className="flex gap-3">
-                  <Button onClick={toggleFavorite} variant="outline">
-                    <Heart className={`h-4 w-4 mr-2 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
-                    {isFavorite ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos'}
-                  </Button>
+                  <FavoriteButton 
+                    movie={movie} 
+                    variant="outline" 
+                    size="default"
+                    showText={true}
+                  />
+                  <WatchlistButton 
+                    movie={movie} 
+                    variant="outline" 
+                    size="default"
+                    showText={true}
+                  />
                 </div>
               </div>
             </div>

@@ -47,6 +47,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
           created_at: string
           display_name: string | null
           favorite_genres: number[] | null
@@ -59,6 +60,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           display_name?: string | null
           favorite_genres?: number[] | null
@@ -71,6 +73,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           display_name?: string | null
           favorite_genres?: number[] | null
@@ -179,6 +182,36 @@ export type Database = {
           rating?: number | null
           user_id?: string
           watch_time?: string
+        }
+        Relationships: []
+      }
+      watchlist: {
+        Row: {
+          created_at: string
+          id: string
+          media_type: string
+          movie_id: number
+          movie_poster: string | null
+          movie_title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          media_type: string
+          movie_id: number
+          movie_poster?: string | null
+          movie_title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          media_type?: string
+          movie_id?: number
+          movie_poster?: string | null
+          movie_title?: string
+          user_id?: string
         }
         Relationships: []
       }

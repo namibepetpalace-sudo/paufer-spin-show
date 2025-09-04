@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Heart, Info } from "lucide-react";
+import { Star, Info } from "lucide-react";
 import { TMDbMovie } from "@/lib/tmdb";
 import MovieModal from "./MovieModal";
+import FavoriteButton from "./FavoriteButton";
+import WatchlistButton from "./WatchlistButton";
 
 interface MovieCardProps {
   id: number;
@@ -82,6 +84,24 @@ const MovieCard = ({ id, title, posterPath, rating, year, genre, type, movie, on
                   {type === 'movie' ? 'Filme' : 'Série'}
                 </Badge>
               </div>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="flex gap-2 pt-2">
+              <FavoriteButton 
+                movie={movie} 
+                variant="outline" 
+                size="sm" 
+                showText={false}
+                className="flex-1"
+              />
+              <WatchlistButton 
+                movie={movie} 
+                variant="outline" 
+                size="sm" 
+                showText={false}
+                className="flex-1"
+              />
             </div>
           </div>
         </CardContent>
