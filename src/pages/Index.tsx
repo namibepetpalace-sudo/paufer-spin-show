@@ -10,9 +10,11 @@ import Roulette from "@/components/Roulette";
 import RecommendationSection from "@/components/RecommendationSection";
 import OnboardingFlow from "@/components/OnboardingFlow";
 import MovieModal from "@/components/MovieModal";
+import FilterStatus from "@/components/FilterStatus";
 import { tmdbService, TMDbMovie } from "@/lib/tmdb";
 import { useAuth } from "@/hooks/useAuth";
 import { usePersonalization } from "@/hooks/usePersonalization";
+import { SearchFilters } from "@/components/SearchFilters";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -111,6 +113,25 @@ const Index = () => {
     }
   };
 
+  const handleClearFilters = () => {
+    setActiveFilters(null);
+    setFilteredResults([]);
+  };
+
+  const handleClearFilter = (key: keyof SearchFilters) => {
+    if (!activeFilters) return;
+    
+    const newFilters = { ...activeFilters };
+    delete newFilters[key];
+    
+    if (Object.keys(newFilters).length === 0) {
+      setActiveFilters(null);
+      setFilteredResults([]);
+    } else {
+      handleApplyFilters(newFilters);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header 
@@ -126,6 +147,14 @@ const Index = () => {
       <OnboardingFlow 
         isOpen={showOnboarding} 
         onClose={handleOnboardingClose} 
+      />
+      
+      {/* Filter Status Bar */}
+      <FilterStatus 
+        activeFilters={activeFilters}
+        onClearFilters={handleClearFilters}
+        onClearFilter={handleClearFilter}
+        resultCount={filteredResults.length > 0 ? filteredResults.length : undefined}
       />
       
       <main>
@@ -146,6 +175,32 @@ const Index = () => {
                 </p>
               </div>
               <SearchResults results={filteredResults} genres={[]} />
+            </div>
+          </div>
+        ) : isSearching ? (
+          <div className="px-4">
+            <div className="container mx-auto">
+              <div className="flex items-center justify-center py-12">
+                <div className="text-center space-y-4">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                  <p className="text-muted-foreground">Aplicando filtros...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : activeFilters ? (
+          <div className="px-4">
+            <div className="container mx-auto">
+              <div className="flex items-center justify-center py-12">
+                <div className="text-center space-y-4">
+                  <div className="text-6xl">🔍</div>
+                  <h3 className="text-xl font-semibold text-foreground">Nenhum resultado encontrado</h3>
+                  <p className="text-muted-foreground max-w-md">
+                    Não encontramos nenhum filme ou série com os filtros aplicados. 
+                    Tente ajustar seus critérios de busca.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         ) : (

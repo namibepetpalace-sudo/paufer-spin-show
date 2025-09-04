@@ -317,6 +317,11 @@ const SearchFilters = ({ onFiltersChange, onApplyFilters, className = "" }: Sear
               >
                 {activeFiltersCount > 0 ? `Aplicar ${activeFiltersCount} Filtros` : 'Selecione Filtros'}
               </Button>
+              {activeFiltersCount > 0 && (
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  Clique para ver os resultados com os filtros selecionados
+                </p>
+              )}
             </div>
           </div>
         </PopoverContent>
