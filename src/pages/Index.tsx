@@ -89,56 +89,16 @@ const Index = () => {
     try {
       let results: TMDbMovie[] = [];
       
-      // Apply filters based on selected criteria
-      if (filters.mediaType === 'movie') {
-        if (filters.category === 'popular') {
-          results = await tmdbService.getPopularMovies();
-        } else if (filters.category === 'top_rated') {
-          results = await tmdbService.getTopRatedMovies();
-        } else if (filters.category === 'now_playing') {
-          results = await tmdbService.getNowPlayingMovies();
-        } else if (filters.category === 'upcoming') {
-          results = await tmdbService.getUpcomingMovies();
-        } else {
-          results = await tmdbService.getPopularMovies();
-        }
-      } else if (filters.mediaType === 'tv') {
-        if (filters.category === 'popular') {
-          results = await tmdbService.getPopularTVShows();
-        } else if (filters.category === 'top_rated') {
-          results = await tmdbService.getTopRatedTVShows();
-        } else if (filters.category === 'now_playing') {
-          results = await tmdbService.getAiringTodayTVShows();
-        } else {
-          results = await tmdbService.getPopularTVShows();
-        }
+      // Use the new advanced filtering method
+      if (filters.mediaType === 'korean') {
+        results = await tmdbService.getKoreanDramas();
       } else if (filters.mediaType === 'anime') {
-        // Search for anime content
-        results = await tmdbService.searchMovies('anime');
+        results = await tmdbService.getAnimeContent();
+      } else if (filters.mediaType === 'documentary') {
+        results = await tmdbService.getDocumentaries();
       } else {
-        // If no specific media type, get popular movies as default
-        results = await tmdbService.getPopularMovies();
-      }
-
-      // Apply additional filters
-      if (filters.genre) {
-        results = results.filter(item => 
-          item.genre_ids?.includes(parseInt(filters.genre))
-        );
-      }
-
-      if (filters.year) {
-        results = results.filter(item => {
-          const releaseYear = tmdbService.formatReleaseYear(tmdbService.getReleaseDate(item));
-          return releaseYear === filters.year;
-        });
-      }
-
-      if (filters.rating) {
-        const minRating = parseFloat(filters.rating);
-        results = results.filter(item => 
-          item.vote_average >= minRating
-        );
+        // Use the searchByFilters method for better filtering
+        results = await tmdbService.searchByFilters(filters);
       }
 
       setFilteredResults(results);

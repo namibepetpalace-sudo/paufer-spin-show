@@ -170,6 +170,87 @@ class TMDbService {
     const data = await this.fetchFromTMDb(`/trending/all/${timeWindow}?page=${page}`);
     return { results: data.results, total_pages: data.total_pages };
   }
+
+  // Advanced filtering methods
+  async searchByFilters(filters: {
+    mediaType?: string;
+    genre?: string;
+    year?: string;
+    rating?: string;
+    category?: string;
+  }): Promise<TMDbMovie[]> {
+    let endpoint = '';
+    let params = [];
+
+    // Determine base endpoint
+    if (filters.mediaType === 'movie') {
+      if (filters.category === 'popular') endpoint = '/movie/popular';
+      else if (filters.category === 'top_rated') endpoint = '/movie/top_rated';
+      else if (filters.category === 'now_playing') endpoint = '/movie/now_playing';
+      else if (filters.category === 'upcoming') endpoint = '/movie/upcoming';
+      else endpoint = '/discover/movie';
+    } else if (filters.mediaType === 'tv') {
+      if (filters.category === 'popular') endpoint = '/tv/popular';
+      else if (filters.category === 'top_rated') endpoint = '/tv/top_rated';
+      else if (filters.category === 'now_playing') endpoint = '/tv/airing_today';
+      else endpoint = '/discover/tv';
+    } else if (filters.mediaType === 'anime') {
+      endpoint = '/discover/tv';
+      params.push('with_keywords=210024'); // Anime keyword
+    } else if (filters.mediaType === 'documentary') {
+      endpoint = '/discover/movie';
+      params.push('with_genres=99'); // Documentary genre
+    } else {
+      endpoint = '/discover/movie'; // Default
+    }
+
+    // Add genre filter
+    if (filters.genre && !endpoint.includes('popular') && !endpoint.includes('top_rated') && !endpoint.includes('now_playing') && !endpoint.includes('upcoming') && !endpoint.includes('airing_today')) {
+      params.push(`with_genres=${filters.genre}`);
+    }
+
+    // Add year filter
+    if (filters.year) {
+      if (filters.mediaType === 'tv') {
+        params.push(`first_air_date_year=${filters.year}`);
+      } else {
+        params.push(`primary_release_year=${filters.year}`);
+      }
+    }
+
+    // Add rating filter
+    if (filters.rating) {
+      params.push(`vote_average.gte=${filters.rating}`);
+    }
+
+    // Add sort by popularity
+    if (!endpoint.includes('popular') && !endpoint.includes('top_rated') && !endpoint.includes('now_playing') && !endpoint.includes('upcoming') && !endpoint.includes('airing_today')) {
+      params.push('sort_by=popularity.desc');
+    }
+
+    // Construct final URL
+    const finalEndpoint = params.length > 0 ? `${endpoint}?${params.join('&')}` : endpoint;
+    
+    const data = await this.fetchFromTMDb(finalEndpoint);
+    return data.results;
+  }
+
+  async getAnimeContent(): Promise<TMDbMovie[]> {
+    // Search for anime using keywords and genres
+    const data = await this.fetchFromTMDb('/discover/tv?with_keywords=210024&sort_by=popularity.desc');
+    return data.results;
+  }
+
+  async getDocumentaries(): Promise<TMDbMovie[]> {
+    const data = await this.fetchFromTMDb('/discover/movie?with_genres=99&sort_by=popularity.desc');
+    return data.results;
+  }
+
+  async getKoreanDramas(): Promise<TMDbMovie[]> {
+    // K-Drama search
+    const data = await this.fetchFromTMDb('/discover/tv?with_original_language=ko&sort_by=popularity.desc');
+    return data.results;
+  }
 }
 
 export const tmdbService = new TMDbService();

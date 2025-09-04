@@ -50,7 +50,8 @@ const SearchFilters = ({ onFiltersChange, onApplyFilters, className = "" }: Sear
     { value: "movie", label: "Filmes" },
     { value: "tv", label: "Séries" },
     { value: "anime", label: "Anime" },
-    { value: "documentary", label: "Documentários" }
+    { value: "documentary", label: "Documentários" },
+    { value: "korean", label: "K-Dramas" }
   ];
 
   const categories = [
