@@ -49,9 +49,11 @@ const SearchFilters = ({ onFiltersChange, onApplyFilters, className = "" }: Sear
   const mediaTypes = [
     { value: "movie", label: "Filmes" },
     { value: "tv", label: "Séries" },
-    { value: "anime", label: "Anime" },
+    { value: "anime", label: "Animes" },
     { value: "documentary", label: "Documentários" },
-    { value: "korean", label: "K-Dramas" }
+    { value: "korean", label: "K-Dramas" },
+    { value: "bollywood", label: "Bollywood" },
+    { value: "chinese", label: "Dramas Chineses" }
   ];
 
   const categories = [

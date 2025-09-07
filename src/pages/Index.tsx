@@ -11,10 +11,12 @@ import RecommendationSection from "@/components/RecommendationSection";
 import OnboardingFlow from "@/components/OnboardingFlow";
 import MovieModal from "@/components/MovieModal";
 import FilterStatus from "@/components/FilterStatus";
+import LoadingStats from "@/components/LoadingStats";
 import { tmdbService, TMDbMovie } from "@/lib/tmdb";
 import { useAuth } from "@/hooks/useAuth";
 import { usePersonalization } from "@/hooks/usePersonalization";
 import { SearchFilters } from "@/components/SearchFilters";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,9 +27,11 @@ const Index = () => {
   const [selectedMovie, setSelectedMovie] = useState<TMDbMovie | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState<any>(null);
+  const [loadingStats, setLoadingStats] = useState({ totalPages: 0, searchType: "" });
   const { user } = useAuth();
   const { needsOnboarding, trackInteraction } = usePersonalization();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     // Mostrar onboarding apenas para usuários logados que não completaram o onboarding
@@ -77,23 +81,51 @@ const Index = () => {
     try {
       let results: TMDbMovie[] = [];
       
-      // Use the new advanced filtering method
+      // Use the new advanced filtering method with multiple pages
       if (filters.mediaType === 'korean') {
-        results = await tmdbService.getKoreanDramas();
+        const response = await tmdbService.getKoreanDramas(1000);
+        results = response.results;
+        setLoadingStats({ totalPages: 50, searchType: "K-Dramas" });
       } else if (filters.mediaType === 'anime') {
-        results = await tmdbService.getAnimeContent();
+        const response = await tmdbService.getAnimeContent(1000);
+        results = response.results;
+        setLoadingStats({ totalPages: response.totalResults, searchType: "Animes" });
       } else if (filters.mediaType === 'documentary') {
-        results = await tmdbService.getDocumentaries();
+        const response = await tmdbService.getDocumentaries(1000);
+        results = response.results;
+        setLoadingStats({ totalPages: 50, searchType: "Documentários" });
+      } else if (filters.mediaType === 'bollywood') {
+        const response = await tmdbService.searchByFilters({ ...filters, mediaType: 'bollywood' }, 1000);
+        results = response.results;
+        setLoadingStats({ totalPages: response.totalPages, searchType: "Filmes Bollywood" });
+      } else if (filters.mediaType === 'chinese') {
+        const response = await tmdbService.searchByFilters({ ...filters, mediaType: 'chinese' }, 1000);
+        results = response.results;
+        setLoadingStats({ totalPages: response.totalPages, searchType: "Dramas Chineses" });
       } else {
         // Use the searchByFilters method for better filtering
-        results = await tmdbService.searchByFilters(filters);
+        const response = await tmdbService.searchByFilters(filters, 1000);
+        results = response.results;
+        setLoadingStats({ totalPages: response.totalPages, searchType: "Filmes e Séries" });
       }
 
       setFilteredResults(results);
       setSearchResults([]); // Clear search results when showing filtered results
       
+      // Show success toast
+      toast({
+        title: "🎉 Busca Avançada Concluída!",
+        description: `${results.length.toLocaleString()} ${loadingStats.searchType.toLowerCase()} encontrados com múltiplas páginas da API.`,
+        duration: 4000,
+      });
+      
     } catch (error) {
       console.error("Erro ao aplicar filtros:", error);
+      toast({
+        title: "❌ Erro na Busca",
+        description: "Não foi possível carregar os resultados. Tente novamente.",
+        variant: "destructive",
+      });
     } finally {
       setIsSearching(false);
     }
@@ -150,30 +182,23 @@ const Index = () => {
         {searchResults.length > 0 ? (
           <SearchResults results={searchResults} genres={[]} />
         ) : filteredResults.length > 0 ? (
-          <div className="px-4">
-            <div className="container mx-auto">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-foreground mb-2">
-                  Resultados dos Filtros
-                </h2>
-                <p className="text-muted-foreground">
-                  {filteredResults.length} resultado(s) encontrado(s)
-                </p>
+          <>
+            <LoadingStats 
+              isLoading={false} 
+              resultCount={filteredResults.length}
+              totalPages={loadingStats.totalPages}
+              searchType={loadingStats.searchType}
+            />
+            <div className="px-4">
+              <div className="container mx-auto">
+                <SearchResults results={filteredResults} genres={[]} />
               </div>
-              <SearchResults results={filteredResults} genres={[]} />
             </div>
-          </div>
+          </>
         ) : isSearching ? (
-          <div className="px-4">
-            <div className="container mx-auto">
-              <div className="flex items-center justify-center py-12">
-                <div className="text-center space-y-4">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                  <p className="text-muted-foreground">Aplicando filtros...</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <LoadingStats 
+            isLoading={true}
+          />
         ) : activeFilters ? (
           <div className="px-4">
             <div className="container mx-auto">

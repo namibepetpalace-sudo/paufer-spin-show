@@ -171,14 +171,14 @@ class TMDbService {
     return { results: data.results, total_pages: data.total_pages };
   }
 
-  // Advanced filtering methods
+  // Advanced filtering methods with multiple page support
   async searchByFilters(filters: {
     mediaType?: string;
     genre?: string;
     year?: string;
     rating?: string;
     category?: string;
-  }): Promise<TMDbMovie[]> {
+  }, maxResults: number = 1000): Promise<{ results: TMDbMovie[], totalResults: number, totalPages: number }> {
     let endpoint = '';
     let params = [];
 
@@ -200,6 +200,15 @@ class TMDbService {
     } else if (filters.mediaType === 'documentary') {
       endpoint = '/discover/movie';
       params.push('with_genres=99'); // Documentary genre
+    } else if (filters.mediaType === 'korean') {
+      endpoint = '/discover/tv';
+      params.push('with_original_language=ko'); // Korean dramas
+    } else if (filters.mediaType === 'bollywood') {
+      endpoint = '/discover/movie';
+      params.push('with_original_language=hi'); // Hindi movies
+    } else if (filters.mediaType === 'chinese') {
+      endpoint = '/discover/tv';
+      params.push('with_original_language=zh'); // Chinese dramas
     } else {
       endpoint = '/discover/movie'; // Default
     }
@@ -211,7 +220,7 @@ class TMDbService {
 
     // Add year filter
     if (filters.year) {
-      if (filters.mediaType === 'tv') {
+      if (filters.mediaType === 'tv' || filters.mediaType === 'anime' || filters.mediaType === 'korean' || filters.mediaType === 'chinese') {
         params.push(`first_air_date_year=${filters.year}`);
       } else {
         params.push(`primary_release_year=${filters.year}`);
@@ -228,28 +237,185 @@ class TMDbService {
       params.push('sort_by=popularity.desc');
     }
 
-    // Construct final URL
-    const finalEndpoint = params.length > 0 ? `${endpoint}?${params.join('&')}` : endpoint;
+    // Calculate how many pages to fetch
+    const resultsPerPage = 20; // TMDb returns 20 results per page
+    const maxPages = Math.min(Math.ceil(maxResults / resultsPerPage), 50); // TMDb limits to 1000 pages, but we'll use 50 for performance
+
+    // Construct base URL
+    const baseEndpoint = params.length > 0 ? `${endpoint}?${params.join('&')}` : endpoint;
     
-    const data = await this.fetchFromTMDb(finalEndpoint);
-    return data.results;
+    // Fetch multiple pages in parallel
+    const pagePromises = [];
+    for (let page = 1; page <= maxPages; page++) {
+      const pageEndpoint = `${baseEndpoint}${baseEndpoint.includes('?') ? '&' : '?'}page=${page}`;
+      pagePromises.push(this.fetchFromTMDb(pageEndpoint));
+    }
+
+    try {
+      const responses = await Promise.all(pagePromises);
+      
+      // Combine all results
+      let allResults: TMDbMovie[] = [];
+      let totalResults = 0;
+      let totalPages = 0;
+      
+      responses.forEach((data, index) => {
+        if (data && data.results) {
+          allResults = allResults.concat(data.results);
+          if (index === 0) {
+            totalResults = data.total_results;
+            totalPages = data.total_pages;
+          }
+        }
+      });
+
+      // Remove duplicates based on ID
+      const uniqueResults = allResults.reduce((unique, movie) => {
+        const existingMovie = unique.find(m => m.id === movie.id);
+        if (!existingMovie) {
+          unique.push(movie);
+        }
+        return unique;
+      }, [] as TMDbMovie[]);
+
+      // Limit to maxResults
+      const limitedResults = uniqueResults.slice(0, maxResults);
+
+      return {
+        results: limitedResults,
+        totalResults: Math.min(totalResults, uniqueResults.length),
+        totalPages: totalPages
+      };
+    } catch (error) {
+      console.error('Error fetching multiple pages:', error);
+      // Fallback to single page
+      const data = await this.fetchFromTMDb(baseEndpoint);
+      return {
+        results: data.results || [],
+        totalResults: data.total_results || 0,
+        totalPages: data.total_pages || 0
+      };
+    }
   }
 
-  async getAnimeContent(): Promise<TMDbMovie[]> {
-    // Search for anime using keywords and genres
-    const data = await this.fetchFromTMDb('/discover/tv?with_keywords=210024&sort_by=popularity.desc');
-    return data.results;
+  async getAnimeContent(maxResults: number = 500): Promise<{ results: TMDbMovie[], totalResults: number }> {
+    // Enhanced anime search using multiple strategies
+    const strategies = [
+      '/discover/tv?with_keywords=210024&sort_by=popularity.desc', // Anime keyword
+      '/discover/tv?with_genres=16&with_original_language=ja&sort_by=popularity.desc', // Japanese animation
+      '/discover/tv?with_keywords=257106&sort_by=popularity.desc', // Manga adaptation
+      '/discover/movie?with_genres=16&with_original_language=ja&sort_by=popularity.desc', // Japanese animated movies
+    ];
+
+    const resultsPerPage = 20;
+    const pagesPerStrategy = Math.ceil(maxResults / (strategies.length * resultsPerPage));
+    
+    const allPromises = [];
+    
+    for (const strategy of strategies) {
+      for (let page = 1; page <= pagesPerStrategy; page++) {
+        const endpoint = `${strategy}&page=${page}`;
+        allPromises.push(this.fetchFromTMDb(endpoint));
+      }
+    }
+
+    try {
+      const responses = await Promise.all(allPromises);
+      let allResults: TMDbMovie[] = [];
+      
+      responses.forEach(data => {
+        if (data && data.results) {
+          allResults = allResults.concat(data.results);
+        }
+      });
+
+      // Remove duplicates and limit results
+      const uniqueResults = allResults.reduce((unique, movie) => {
+        const existingMovie = unique.find(m => m.id === movie.id);
+        if (!existingMovie) {
+          unique.push(movie);
+        }
+        return unique;
+      }, [] as TMDbMovie[]);
+
+      return {
+        results: uniqueResults.slice(0, maxResults),
+        totalResults: uniqueResults.length
+      };
+    } catch (error) {
+      console.error('Error fetching anime content:', error);
+      const fallback = await this.fetchFromTMDb('/discover/tv?with_keywords=210024&sort_by=popularity.desc');
+      return {
+        results: fallback.results || [],
+        totalResults: fallback.total_results || 0
+      };
+    }
   }
 
-  async getDocumentaries(): Promise<TMDbMovie[]> {
-    const data = await this.fetchFromTMDb('/discover/movie?with_genres=99&sort_by=popularity.desc');
-    return data.results;
+  async getDocumentaries(maxResults: number = 500): Promise<{ results: TMDbMovie[], totalResults: number }> {
+    const resultsPerPage = 20;
+    const maxPages = Math.ceil(maxResults / resultsPerPage);
+    
+    const pagePromises = [];
+    for (let page = 1; page <= maxPages; page++) {
+      pagePromises.push(this.fetchFromTMDb(`/discover/movie?with_genres=99&sort_by=popularity.desc&page=${page}`));
+    }
+
+    try {
+      const responses = await Promise.all(pagePromises);
+      let allResults: TMDbMovie[] = [];
+      
+      responses.forEach(data => {
+        if (data && data.results) {
+          allResults = allResults.concat(data.results);
+        }
+      });
+
+      return {
+        results: allResults.slice(0, maxResults),
+        totalResults: allResults.length
+      };
+    } catch (error) {
+      console.error('Error fetching documentaries:', error);
+      const fallback = await this.fetchFromTMDb('/discover/movie?with_genres=99&sort_by=popularity.desc');
+      return {
+        results: fallback.results || [],
+        totalResults: fallback.total_results || 0
+      };
+    }
   }
 
-  async getKoreanDramas(): Promise<TMDbMovie[]> {
-    // K-Drama search
-    const data = await this.fetchFromTMDb('/discover/tv?with_original_language=ko&sort_by=popularity.desc');
-    return data.results;
+  async getKoreanDramas(maxResults: number = 500): Promise<{ results: TMDbMovie[], totalResults: number }> {
+    const resultsPerPage = 20;
+    const maxPages = Math.ceil(maxResults / resultsPerPage);
+    
+    const pagePromises = [];
+    for (let page = 1; page <= maxPages; page++) {
+      pagePromises.push(this.fetchFromTMDb(`/discover/tv?with_original_language=ko&sort_by=popularity.desc&page=${page}`));
+    }
+
+    try {
+      const responses = await Promise.all(pagePromises);
+      let allResults: TMDbMovie[] = [];
+      
+      responses.forEach(data => {
+        if (data && data.results) {
+          allResults = allResults.concat(data.results);
+        }
+      });
+
+      return {
+        results: allResults.slice(0, maxResults),
+        totalResults: allResults.length
+      };
+    } catch (error) {
+      console.error('Error fetching Korean dramas:', error);
+      const fallback = await this.fetchFromTMDb('/discover/tv?with_original_language=ko&sort_by=popularity.desc');
+      return {
+        results: fallback.results || [],
+        totalResults: fallback.total_results || 0
+      };
+    }
   }
 }
 
