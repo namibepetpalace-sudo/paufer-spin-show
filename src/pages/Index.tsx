@@ -30,19 +30,9 @@ const Index = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Mostrar onboarding para usuários logados que não completaram
-    if (needsOnboarding) {
+    // Mostrar onboarding apenas para usuários logados que não completaram o onboarding
+    if (user && needsOnboarding) {
       setShowOnboarding(true);
-    }
-    // Para usuários não logados, mostrar onboarding promocional na primeira visita
-    else if (!user) {
-      const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
-      if (!hasSeenOnboarding) {
-        const timer = setTimeout(() => {
-          setShowOnboarding(true);
-        }, 2000);
-        return () => clearTimeout(timer);
-      }
     }
   }, [user, needsOnboarding]);
 
@@ -73,10 +63,6 @@ const Index = () => {
 
   const handleOnboardingClose = () => {
     setShowOnboarding(false);
-    // Para usuários não logados, marca como visto
-    if (!user) {
-      localStorage.setItem('hasSeenOnboarding', 'true');
-    }
   };
 
   const handleMovieSelect = (movie: TMDbMovie) => {
