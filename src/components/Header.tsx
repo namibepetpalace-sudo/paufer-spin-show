@@ -7,12 +7,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
-  onSearchResults?: (results: any[]) => void;
+  onSearch?: (query: string) => void;
   onMovieSelect?: (movie: any) => void;
   onApplyFilters?: (filters: any) => void;
 }
 
-const Header = ({ onSearchResults, onMovieSelect, onApplyFilters }: HeaderProps) => {
+const Header = ({ onSearch, onMovieSelect, onApplyFilters }: HeaderProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -42,7 +42,7 @@ const Header = ({ onSearchResults, onMovieSelect, onApplyFilters }: HeaderProps)
         <div className="flex-1 max-w-2xl mx-8 flex items-center gap-3">
           <div className="flex-1">
             <SearchBar 
-              onSearchResults={onSearchResults}
+              onSearch={onSearch}
               onMovieSelect={onMovieSelect}
               placeholder="Buscar filmes, séries, animes, doramas..."
             />

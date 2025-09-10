@@ -15,14 +15,14 @@ interface SearchSuggestion {
 }
 
 interface SearchBarProps {
-  onSearchResults?: (results: any[]) => void;
+  onSearch?: (query: string) => void;
   onMovieSelect?: (movie: any) => void;
   placeholder?: string;
   className?: string;
 }
 
 const SearchBar = ({ 
-  onSearchResults, 
+  onSearch, 
   onMovieSelect, 
   placeholder = "Buscar filmes e séries...",
   className = ""
@@ -60,7 +60,7 @@ const SearchBar = ({
     loadGenres();
   }, []);
 
-  // Search for suggestions when query changes
+  // Search for suggestions when query changes (only suggestions, not full search)
   useEffect(() => {
     const searchSuggestions = async () => {
       if (!debouncedQuery.trim()) {
@@ -82,11 +82,6 @@ const SearchBar = ({
         }));
         
         setSuggestions(suggestions);
-        
-        // Also update search results for parent component
-        if (onSearchResults) {
-          onSearchResults(results);
-        }
       } catch (error) {
         console.error('Error searching:', error);
         setSuggestions([]);
@@ -96,7 +91,7 @@ const SearchBar = ({
     };
 
     searchSuggestions();
-  }, [debouncedQuery, onSearchResults]);
+  }, [debouncedQuery]);
 
   // Handle click outside to close suggestions
   useEffect(() => {
@@ -163,6 +158,12 @@ const SearchBar = ({
     if (e.key === 'Escape') {
       setShowSuggestions(false);
       inputRef.current?.blur();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (query.trim() && onSearch) {
+        onSearch(query.trim());
+        setShowSuggestions(false);
+      }
     }
   };
 
@@ -187,7 +188,6 @@ const SearchBar = ({
               setQuery("");
               setSuggestions([]);
               setShowSuggestions(false);
-              onSearchResults?.([]);
             }}
             className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-transparent"
           >

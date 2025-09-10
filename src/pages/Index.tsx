@@ -12,7 +12,7 @@ import OnboardingFlow from "@/components/OnboardingFlow";
 import MovieModal from "@/components/MovieModal";
 import FilterStatus from "@/components/FilterStatus";
 import LoadingStats from "@/components/LoadingStats";
-import { tmdbService, TMDbMovie } from "@/lib/tmdb";
+import { tmdbService, TMDbMovie, TMDbGenre } from "@/lib/tmdb";
 import { useAuth } from "@/hooks/useAuth";
 import { usePersonalization } from "@/hooks/usePersonalization";
 import { SearchFilters } from "@/components/SearchFilters";
@@ -28,6 +28,7 @@ const Index = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState<any>(null);
   const [loadingStats, setLoadingStats] = useState({ totalPages: 0, searchType: "" });
+  const [genres, setGenres] = useState<TMDbGenre[]>([]);
   const { user } = useAuth();
   const { needsOnboarding, trackInteraction } = usePersonalization();
   const navigate = useNavigate();
@@ -38,15 +39,34 @@ const Index = () => {
     if (user && needsOnboarding) {
       setShowOnboarding(true);
     }
+    
+    // Load genres on mount
+    const loadGenres = async () => {
+      try {
+        const movieGenres = await tmdbService.getMovieGenres();
+        const tvGenres = await tmdbService.getTVGenres();
+        setGenres([...movieGenres, ...tvGenres]);
+      } catch (error) {
+        console.error('Error loading genres:', error);
+      }
+    };
+    
+    loadGenres();
   }, [user, needsOnboarding]);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
+  // Centralized search function
+  const handleSearch = async (query: string) => {
+    console.log('🔍 Starting search for:', query);
+    if (!query.trim()) return;
 
+    setSearchQuery(query);
     setIsSearching(true);
+    setFilteredResults([]); // Clear filtered results
+    setActiveFilters(null); // Clear active filters
+    
     try {
-      const results = await tmdbService.searchMovies(searchQuery);
+      const results = await tmdbService.searchMovies(query);
+      console.log('✅ Search results:', results.length, 'items');
       setSearchResults(results);
 
       // Registra busca como interação do usuário
@@ -55,11 +75,16 @@ const Index = () => {
           movie_id: results[0].id,
           media_type: results[0].media_type || 'movie',
           interaction_type: 'search',
-          interaction_data: { query: searchQuery, resultsCount: results.length }
+          interaction_data: { query, resultsCount: results.length }
         });
       }
     } catch (error) {
-      console.error("Erro na busca:", error);
+      console.error("❌ Erro na busca:", error);
+      toast({
+        title: "❌ Erro na Busca",
+        description: "Não foi possível realizar a busca. Tente novamente.",
+        variant: "destructive",
+      });
     } finally {
       setIsSearching(false);
     }
@@ -153,11 +178,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header 
-        onSearchResults={(results: any) => {
-          setSearchResults(results);
-          setFilteredResults([]); // Clear filtered results when new search is made
-          setActiveFilters(null);
-        }}
+        onSearch={handleSearch}
         onMovieSelect={handleMovieSelect}
         onApplyFilters={handleApplyFilters}
       />
@@ -180,7 +201,7 @@ const Index = () => {
         
 
         {searchResults.length > 0 ? (
-          <SearchResults results={searchResults} genres={[]} />
+          <SearchResults results={searchResults} genres={genres} />
         ) : filteredResults.length > 0 ? (
           <>
             <LoadingStats 
@@ -191,7 +212,7 @@ const Index = () => {
             />
             <div className="px-4">
               <div className="container mx-auto">
-                <SearchResults results={filteredResults} genres={[]} />
+                <SearchResults results={filteredResults} genres={genres} />
               </div>
             </div>
           </>
