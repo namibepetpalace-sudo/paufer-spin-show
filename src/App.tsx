@@ -15,6 +15,11 @@ import TrendingPage from "./pages/TrendingPage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 import AdminPage from "./pages/AdminPage";
+import SplashScreen from "./pages/SplashScreen";
+import OnboardingWelcome from "./pages/OnboardingWelcome";
+import OnboardingLogin from "./pages/OnboardingLogin";
+import OnboardingInterests from "./pages/OnboardingInterests";
+import DownloadPage from "./pages/DownloadPage";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +32,10 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
+              <Route path="/splash" element={<SplashScreen />} />
+              <Route path="/onboarding" element={<OnboardingWelcome />} />
+              <Route path="/onboarding/login" element={<OnboardingLogin />} />
+              <Route path="/onboarding/interests" element={<OnboardingInterests />} />
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/movie/:id" element={<MovieDetails type="movie" />} />
@@ -34,6 +43,7 @@ const App = () => (
               <Route path="/favorites" element={<FavoritesPage />} />
               <Route path="/watchlist" element={<WatchlistPage />} />
               <Route path="/trending" element={<TrendingPage />} />
+              <Route path="/downloads" element={<DownloadPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/admin" element={<AdminPage />} />

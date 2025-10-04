@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, ArrowLeft, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { tmdbService } from "@/lib/tmdb";
+import { BottomNav } from "@/components/BottomNav";
 
 const WatchlistPage = () => {
   const { user, loading: authLoading } = useAuth();
@@ -108,6 +109,8 @@ const WatchlistPage = () => {
           </div>
         )}
       </div>
+
+      <BottomNav />
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { TrendingUp, ArrowLeft, Calendar, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
+import { BottomNav } from "@/components/BottomNav";
 import MovieCard from "@/components/MovieCard";
 import { tmdbService, TMDbMovie, TMDbGenre } from "@/lib/tmdb";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -176,6 +177,8 @@ const TrendingPage = () => {
           </div>
         </div>
       </main>
+
+      <BottomNav />
     </div>
   );
 };

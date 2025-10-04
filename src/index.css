@@ -2,121 +2,103 @@
 @tailwind components;
 @tailwind utilities;
 
-/* PauferFlix Design System - Streaming & Entertainment Theme */
+/* PauferFlix Design System - Mova Inspired PWA */
 
 @layer base {
   :root {
-    /* Netflix Dark Theme - Default */
+    /* Mova Dark Theme - Default (#E50914 Red) */
     --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
+    --foreground: 0 0% 100%;
 
     --card: 0 0% 8%;
-    --card-foreground: 0 0% 98%;
+    --card-foreground: 0 0% 100%;
 
     --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 98%;
+    --popover-foreground: 0 0% 100%;
 
-    /* Netflix Red as Primary */
-    --primary: 348 97% 39%;
-    --primary-foreground: 0 0% 98%;
-    --primary-glow: 348 97% 49%;
+    /* Primary Red - #E50914 */
+    --primary: 0 89% 49%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 0 89% 59%;
+    --primary-dark: 0 70% 35%;
 
-    --secondary: 0 0% 18%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 18%;
-    --muted-foreground: 0 0% 75%; /* Better contrast for readability */
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 70%;
 
-    --accent: 0 0% 18%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 0 89% 49%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 348 97% 39%;
+    --input: 0 0% 12%;
+    --ring: 0 89% 49%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* Netflix Custom Colors */
-    --netflix-red: 348 97% 39%;
-    --netflix-dark: 0 0% 8%;
-    --netflix-darker: 0 0% 4%;
-    --netflix-gray: 0 0% 18%;
-    --netflix-light-gray: 0 0% 75%; /* Better contrast */
-    --streaming-blue: 210 100% 60%; /* Complementary streaming blue */
+    /* Custom Mova Colors */
+    --background-secondary: 0 0% 8%;
+    --background-tertiary: 0 0% 12%;
+    --text-secondary: 0 0% 70%;
     
-    /* Netflix Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(348 97% 39%), hsl(0 0% 8%));
-    --gradient-hero: linear-gradient(135deg, hsl(348 97% 39% / 0.9), hsl(0 0% 4% / 0.8), hsl(0 0% 0%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 18%));
-    --gradient-glow: radial-gradient(circle at center, hsl(348 97% 39% / 0.4), transparent 70%);
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0 89% 49%), hsl(0 70% 35%));
+    --gradient-overlay: linear-gradient(180deg, transparent 0%, hsl(0 0% 0% / 0.8) 70%, hsl(0 0% 0%) 100%);
     
-    /* Netflix Shadows */
-    --shadow-glow: 0 0 40px hsl(348 97% 39% / 0.4);
-    --shadow-card: 0 10px 30px -10px hsl(0 0% 0% / 0.7);
-    --shadow-elevated: 0 20px 40px -10px hsl(0 0% 0% / 0.8);
-    
-    /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Shadows */
+    --shadow-card: 0 4px 16px hsl(0 0% 0% / 0.3);
+    --shadow-elevated: 0 8px 24px hsl(0 0% 0% / 0.4);
 
+    /* Sidebar (unused in PWA but keeping for compatibility) */
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .light {
-    /* Netflix Light Theme */
+    /* Mova Light Theme */
     --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --foreground: 0 0% 0%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card: 0 0% 98%;
+    --card-foreground: 0 0% 0%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
+    --popover-foreground: 0 0% 0%;
 
-    /* Netflix Red stays the same */
-    --primary: 348 97% 39%;
-    --primary-foreground: 0 0% 98%;
-    --primary-glow: 348 97% 49%;
+    --primary: 0 89% 49%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 0 89% 59%;
+    --primary-dark: 0 70% 35%;
 
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 0%;
 
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%; /* Good contrast for light mode */
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 0 89% 49%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 348 97% 39%;
+    --border: 0 0% 90%;
+    --input: 0 0% 96%;
+    --ring: 0 89% 49%;
 
-    /* Netflix Custom Colors for Light Mode */
-    --netflix-red: 348 97% 39%;
-    --netflix-dark: 0 0% 95%;
-    --netflix-darker: 0 0% 89.8%;
-    --netflix-gray: 0 0% 89.8%;
-    --netflix-light-gray: 0 0% 45.1%;
+    --background-secondary: 0 0% 96%;
+    --background-tertiary: 0 0% 90%;
+    --text-secondary: 0 0% 45%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -136,76 +118,38 @@
 
   body {
     @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* PWA Safe Area Support */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
   }
 }
 
 @layer components {
-  /* Hero Section */
-  .hero-gradient {
-    background: var(--gradient-hero);
-  }
-  
-  .glow-effect {
-    box-shadow: var(--shadow-glow);
-    transition: var(--transition-smooth);
-  }
-  
-  .glow-effect:hover {
-    box-shadow: 0 0 30px hsl(var(--netflix-red) / 0.6);
-  }
-  
-  /* Movie Cards */
-  .movie-card {
-    background: var(--gradient-card);
-    box-shadow: var(--shadow-card);
-    transition: var(--transition-smooth);
-  }
-  
-  .movie-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: var(--shadow-elevated);
-  }
-  
-  /* Roleta Spin Animation */
-  .spin-roulette {
-    transition: var(--transition-spring);
-  }
-  
-  /* Gradient Text */
-  .gradient-text {
-    background: var(--gradient-primary);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  
-  /* Typewriter Animation for Movie Titles */
-  .typewriter {
-    border-right: 2px solid hsl(var(--netflix-red));
-    animation: typewriter-cursor 1s infinite;
-  }
-  
-  @keyframes typewriter-cursor {
-    0%, 50% { border-color: hsl(var(--netflix-red)); }
-    51%, 100% { border-color: transparent; }
-  }
-  
   /* Custom Scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
+    height: 6px;
   }
   
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: hsl(var(--netflix-darker));
+    background: hsl(var(--background-secondary));
   }
   
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--gradient-primary);
-    border-radius: 4px;
+    background: hsl(var(--muted));
+    border-radius: 3px;
   }
   
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--netflix-red));
+    background: hsl(var(--primary));
   }
 
   /* Line clamp utilities */
@@ -214,5 +158,19 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
   }
 }

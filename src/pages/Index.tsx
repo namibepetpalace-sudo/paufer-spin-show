@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import SearchBar from "@/components/SearchBar";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
+import { BottomNav } from "@/components/BottomNav";
 import TrendingSection from "@/components/TrendingSection";
 import CategorySection from "@/components/CategorySection";
 import SearchResults from "@/components/SearchResults";
@@ -303,6 +304,9 @@ const Index = () => {
         onClose={() => setIsModalOpen(false)}
         movie={selectedMovie}
       />
+
+      {/* Bottom Navigation */}
+      <BottomNav />
     </div>
   );
 };

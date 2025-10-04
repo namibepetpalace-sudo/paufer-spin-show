@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
+import { BottomNav } from "@/components/BottomNav";
 
 interface Profile {
   display_name?: string;
@@ -282,6 +283,8 @@ const ProfilePage = () => {
           </div>
         </div>
       </main>
+
+      <BottomNav />
     </div>
   );
 };

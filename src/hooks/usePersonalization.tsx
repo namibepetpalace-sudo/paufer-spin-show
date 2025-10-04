@@ -186,6 +186,13 @@ export const usePersonalization = () => {
     }
   };
 
+  const saveGenrePreferences = async (genreIds: number[]) => {
+    return await updatePreferences({
+      favorite_genres: genreIds,
+      onboarding_completed: true
+    });
+  };
+
   return {
     preferences,
     loading,
@@ -195,6 +202,7 @@ export const usePersonalization = () => {
     addToWatchHistory,
     rateMovie,
     getPersonalizedRecommendations,
+    saveGenrePreferences,
     needsOnboarding: !preferences?.onboarding_completed && !!user
   };
 };
