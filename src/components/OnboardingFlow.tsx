@@ -190,6 +190,8 @@ const OnboardingFlow = ({ isOpen, onClose }: OnboardingFlowProps) => {
     try {
       const success = await completeOnboarding(selectedGenres);
       if (success) {
+        // Marcar no localStorage que o onboarding foi concluído permanentemente
+        localStorage.setItem('onboarding_completed', 'true');
         toast({
           title: "Onboarding concluído!",
           description: "Suas preferências foram salvas. Agora você receberá recomendações personalizadas.",

@@ -193,6 +193,9 @@ export const usePersonalization = () => {
     });
   };
 
+  // Verificar se o onboarding foi concluído no localStorage também
+  const localOnboardingCompleted = localStorage.getItem('onboarding_completed') === 'true';
+  
   return {
     preferences,
     loading,
@@ -203,6 +206,6 @@ export const usePersonalization = () => {
     rateMovie,
     getPersonalizedRecommendations,
     saveGenrePreferences,
-    needsOnboarding: !preferences?.onboarding_completed && !!user
+    needsOnboarding: !preferences?.onboarding_completed && !!user && !localOnboardingCompleted
   };
 };

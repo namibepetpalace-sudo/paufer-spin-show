@@ -36,9 +36,14 @@ const Index = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Verificar se o onboarding já foi mostrado nesta sessão
+    const onboardingShown = sessionStorage.getItem('onboarding_shown');
+    
     // Mostrar onboarding apenas para usuários logados que não completaram o onboarding
-    if (user && needsOnboarding) {
+    // E que não viram nesta sessão
+    if (user && needsOnboarding && !onboardingShown) {
       setShowOnboarding(true);
+      sessionStorage.setItem('onboarding_shown', 'true');
     }
     
     // Load genres on mount
