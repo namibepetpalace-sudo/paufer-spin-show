@@ -14,6 +14,143 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_notifications: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          message: string
+          scheduled_for: string | null
+          sent_at: string | null
+          target: string
+          title: string
+          type: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          message: string
+          scheduled_for?: string | null
+          sent_at?: string | null
+          target: string
+          title: string
+          type: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          message?: string
+          scheduled_for?: string | null
+          sent_at?: string | null
+          target?: string
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      collection_items: {
+        Row: {
+          added_at: string | null
+          collection_id: string | null
+          id: string
+          media_type: string
+          movie_id: number
+          position: number
+        }
+        Insert: {
+          added_at?: string | null
+          collection_id?: string | null
+          id?: string
+          media_type?: string
+          movie_id: number
+          position: number
+        }
+        Update: {
+          added_at?: string | null
+          collection_id?: string | null
+          id?: string
+          media_type?: string
+          movie_id?: number
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_items_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collections: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_public: boolean | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
@@ -86,6 +223,120 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          id: string
+          media_type: string
+          moderated_at: string | null
+          moderated_by: string | null
+          movie_id: number
+          rating: number | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          media_type?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          movie_id: number
+          rating?: number | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          media_type?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          movie_id?: number
+          rating?: number | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          cancelled_at: string | null
+          currency: string | null
+          expires_at: string | null
+          id: string
+          payment_method: string | null
+          plan: string
+          price: number | null
+          started_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          cancelled_at?: string | null
+          currency?: string | null
+          expires_at?: string | null
+          id?: string
+          payment_method?: string | null
+          plan: string
+          price?: number | null
+          started_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          cancelled_at?: string | null
+          currency?: string | null
+          expires_at?: string | null
+          id?: string
+          payment_method?: string | null
+          plan?: string
+          price?: number | null
+          started_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          created_at: string | null
+          description: string
+          id: string
+          priority: string | null
+          status: string | null
+          subject: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string | null
+          description: string
+          id?: string
+          priority?: string | null
+          status?: string | null
+          subject: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string | null
+          description?: string
+          id?: string
+          priority?: string | null
+          status?: string | null
+          subject?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_interactions: {
         Row: {
           created_at: string
@@ -145,6 +396,30 @@ export type Database = {
           rating?: number
           review?: string | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          granted_at: string | null
+          granted_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }
         Relationships: []
@@ -220,10 +495,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user" | "premium_user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -350,6 +631,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user", "premium_user"],
+    },
   },
 } as const
