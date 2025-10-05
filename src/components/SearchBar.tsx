@@ -203,7 +203,7 @@ const SearchBar = ({
 
       {/* Suggestions Dropdown */}
       {showSuggestions && (query || recentSearches.length > 0) && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-netflix-dark border border-netflix-gray rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-lg shadow-xl z-[100] max-h-96 overflow-y-auto backdrop-blur-xl">
           {/* Recent Searches */}
           {!query && recentSearches.length > 0 && (
             <div className="p-4 border-b border-netflix-gray">
