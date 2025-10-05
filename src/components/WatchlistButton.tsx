@@ -36,8 +36,8 @@ const WatchlistButton = ({
       className={cn(
         "transition-all duration-200",
         isMovieInWatchlist 
-          ? "bg-blue-500 hover:bg-blue-600 text-white border-blue-500" 
-          : "hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300",
+          ? "bg-primary hover:bg-primary/90 text-primary-foreground border-primary" 
+          : "hover:bg-accent hover:text-accent-foreground",
         className
       )}
     >
