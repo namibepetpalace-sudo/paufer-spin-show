@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
+import React from "react";
 import { useAuth } from "./useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 
 export const useAdminAuth = () => {
   const { user, loading: authLoading } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  React.useEffect(() => {
     const checkAdminRole = async () => {
       if (authLoading) return;
 
