@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Edit, Save, ArrowLeft, Camera, Mail, Calendar } from "lucide-react";
+import { User, Edit, Save, ArrowLeft, Camera, Mail, Calendar, Coins } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -256,6 +256,27 @@ const ProfilePage = () => {
                     </div>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Créditos e Recarga */}
+            <Card className="border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Coins className="w-5 h-5 text-primary" />
+                  Créditos
+                </CardTitle>
+                <CardDescription>
+                  Recarregue seus créditos para desbloquear benefícios
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  onClick={() => navigate('/recharge')}
+                  className="w-full bg-primary hover:bg-primary/90"
+                >
+                  💳 Recarregar Créditos
+                </Button>
               </CardContent>
             </Card>
 

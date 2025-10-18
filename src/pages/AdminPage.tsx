@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { DataTable } from "@/components/admin/DataTable";
 import { StatsCard } from "@/components/admin/StatsCard";
+import { RechargeCodesTab } from "@/components/admin/RechargeCodesTab";
 import { 
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
@@ -360,19 +361,22 @@ const AdminPage = () => {
             title="Total de Usuários"
             value={stats.totalUsers}
             icon={Users}
-            trend={{ value: stats.growthRate, isPositive: true }}
+            trend="up"
+            trendValue={{ value: stats.growthRate, isPositive: true }}
           />
           <StatsCard
             title="Usuários Ativos (24h)"
             value={stats.activeUsers}
             icon={Activity}
+            trend="neutral"
             description="Usuários ativos nas últimas 24 horas"
           />
           <StatsCard
             title="Receita Total"
             value={`R$ ${stats.totalRevenue.toFixed(2)}`}
             icon={DollarSign}
-            trend={{ value: 8.3, isPositive: true }}
+            trend="up"
+            trendValue={{ value: 8.3, isPositive: true }}
           />
           <StatsCard
             title="Reviews Pendentes"
@@ -396,9 +400,10 @@ const AdminPage = () => {
 
         {/* Main Tabs */}
         <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9 gap-1">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="users">Usuários</TabsTrigger>
+            <TabsTrigger value="codes">Códigos</TabsTrigger>
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
             <TabsTrigger value="subscriptions">Assinaturas</TabsTrigger>
             <TabsTrigger value="tickets">Suporte</TabsTrigger>
@@ -476,6 +481,11 @@ const AdminPage = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Recharge Codes Tab */}
+          <TabsContent value="codes" className="space-y-4">
+            <RechargeCodesTab />
           </TabsContent>
 
           {/* Users Tab */}

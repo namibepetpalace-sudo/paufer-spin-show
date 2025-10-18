@@ -86,6 +86,44 @@ export type Database = {
         }
         Relationships: []
       }
+      code_redemptions: {
+        Row: {
+          code_id: string
+          credits_added: number
+          id: string
+          ip_address: unknown | null
+          redeemed_at: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          code_id: string
+          credits_added: number
+          id?: string
+          ip_address?: unknown | null
+          redeemed_at?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          code_id?: string
+          credits_added?: number
+          id?: string
+          ip_address?: unknown | null
+          redeemed_at?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "code_redemptions_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "recharge_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collection_items: {
         Row: {
           added_at: string | null
@@ -151,6 +189,39 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          created_at: string | null
+          description: string
+          id: string
+          metadata: Json | null
+          type: Database["public"]["Enums"]["transaction_type"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          created_at?: string | null
+          description: string
+          id?: string
+          metadata?: Json | null
+          type: Database["public"]["Enums"]["transaction_type"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          created_at?: string | null
+          description?: string
+          id?: string
+          metadata?: Json | null
+          type?: Database["public"]["Enums"]["transaction_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
@@ -189,9 +260,12 @@ export type Database = {
           display_name: string | null
           favorite_genres: number[] | null
           id: string
+          is_premium: boolean | null
           onboarding_completed: boolean | null
           preferred_duration: string | null
           preferred_rating: string | null
+          premium_benefits: Json | null
+          premium_expires_at: string | null
           updated_at: string
           user_id: string
         }
@@ -202,9 +276,12 @@ export type Database = {
           display_name?: string | null
           favorite_genres?: number[] | null
           id?: string
+          is_premium?: boolean | null
           onboarding_completed?: boolean | null
           preferred_duration?: string | null
           preferred_rating?: string | null
+          premium_benefits?: Json | null
+          premium_expires_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -215,11 +292,56 @@ export type Database = {
           display_name?: string | null
           favorite_genres?: number[] | null
           id?: string
+          is_premium?: boolean | null
           onboarding_completed?: boolean | null
           preferred_duration?: string | null
           preferred_rating?: string | null
+          premium_benefits?: Json | null
+          premium_expires_at?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      recharge_codes: {
+        Row: {
+          benefits: Json | null
+          code: string
+          created_at: string | null
+          created_by: string | null
+          credits_amount: number
+          current_uses: number
+          description: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_uses: number
+        }
+        Insert: {
+          benefits?: Json | null
+          code: string
+          created_at?: string | null
+          created_by?: string | null
+          credits_amount: number
+          current_uses?: number
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number
+        }
+        Update: {
+          benefits?: Json | null
+          code?: string
+          created_at?: string | null
+          created_by?: string | null
+          credits_amount?: number
+          current_uses?: number
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number
         }
         Relationships: []
       }
@@ -334,6 +456,36 @@ export type Database = {
           subject?: string
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_credits: {
+        Row: {
+          balance: number
+          created_at: string | null
+          id: string
+          total_purchased: number
+          total_spent: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string | null
+          id?: string
+          total_purchased?: number
+          total_spent?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string | null
+          id?: string
+          total_purchased?: number
+          total_spent?: number
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -505,6 +657,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user" | "premium_user"
+      transaction_type: "recharge" | "spend" | "refund" | "bonus"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -633,6 +786,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user", "premium_user"],
+      transaction_type: ["recharge", "spend", "refund", "bonus"],
     },
   },
 } as const

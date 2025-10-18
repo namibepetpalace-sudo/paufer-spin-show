@@ -21,6 +21,7 @@ import OnboardingWelcome from "./pages/OnboardingWelcome";
 import OnboardingLogin from "./pages/OnboardingLogin";
 import OnboardingInterests from "./pages/OnboardingInterests";
 import DownloadPage from "./pages/DownloadPage";
+import RechargePage from "./pages/RechargePage";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="/downloads" element={<DownloadPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/recharge" element={<RechargePage />} />
               <Route path="/admin" element={<AdminPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
