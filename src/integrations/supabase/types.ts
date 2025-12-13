@@ -55,7 +55,7 @@ export type Database = {
           action: string
           created_at: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           metadata: Json | null
           resource_id: string | null
           resource_type: string | null
@@ -66,7 +66,7 @@ export type Database = {
           action: string
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           resource_id?: string | null
           resource_type?: string | null
@@ -77,7 +77,7 @@ export type Database = {
           action?: string
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           resource_id?: string | null
           resource_type?: string | null
@@ -91,7 +91,7 @@ export type Database = {
           code_id: string
           credits_added: number
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           redeemed_at: string | null
           user_agent: string | null
           user_id: string
@@ -100,7 +100,7 @@ export type Database = {
           code_id: string
           credits_added: number
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           redeemed_at?: string | null
           user_agent?: string | null
           user_id: string
@@ -109,7 +109,7 @@ export type Database = {
           code_id?: string
           credits_added?: number
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           redeemed_at?: string | null
           user_agent?: string | null
           user_id?: string
