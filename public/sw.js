@@ -52,6 +52,14 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Sempre usar Network-First para documentos (HTML / navegação)
+  if (request.mode === 'navigate' || request.destination === 'document') {
+    event.respondWith(
+      fetch(request).catch(() => caches.match('/offline.html'))
+    );
+    return;
+  }
+
   // Cache-First para imagens
   if (request.destination === 'image') {
     event.respondWith(
@@ -88,7 +96,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-First para recursos estáticos
+  // Cache-First para outros recursos estáticos (CSS, JS, fontes, etc.)
   event.respondWith(
     caches.match(request).then((response) => {
       if (response) {
@@ -107,7 +115,7 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         })
         .catch(() => {
-          // Fallback para página offline em navegação
+          // Em último caso, para navegação sem conexão, usa página offline
           if (request.destination === 'document') {
             return caches.match('/offline.html');
           }
