@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Shuffle, Sparkles } from "lucide-react";
 import { tmdbService, TMDbMovie } from "@/lib/tmdb";
@@ -12,6 +13,7 @@ interface RouletteMovie {
 }
 
 const Roulette = () => {
+  const navigate = useNavigate();
   const [isSpinning, setIsSpinning] = useState(false);
   const [selectedItem, setSelectedItem] = useState<RouletteMovie | null>(null);
   const [rotation, setRotation] = useState(0);
@@ -192,6 +194,7 @@ const Roulette = () => {
                     size="sm" 
                     variant="secondary"
                     className="bg-white/20 hover:bg-white/30 text-white border-0"
+                    onClick={() => navigate(`/movie/${selectedItem.id}`)}
                   >
                     Ver Detalhes
                   </Button>

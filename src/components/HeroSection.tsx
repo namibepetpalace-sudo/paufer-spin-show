@@ -2,9 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Play, Info, Zap } from "lucide-react";
 import Roulette from "./Roulette";
 import { useState, useEffect } from "react";
+import { tmdbService, TMDbMovie } from "@/lib/tmdb";
 
 const HeroSection = () => {
   const [currentMovieIndex, setCurrentMovieIndex] = useState(0);
+  const [featuredMovie, setFeaturedMovie] = useState<TMDbMovie | null>(null);
+  
   const movieTitles = [
     "Stranger Things",
     "Breaking Bad", 
@@ -23,6 +26,22 @@ const HeroSection = () => {
       setCurrentMovieIndex((prev) => (prev + 1) % movieTitles.length);
     }, 3000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Load dynamic featured movie
+  useEffect(() => {
+    const loadFeaturedMovie = async () => {
+      try {
+        const trending = await tmdbService.getTrending('day');
+        if (trending.length > 0) {
+          const randomIndex = Math.floor(Math.random() * Math.min(10, trending.length));
+          setFeaturedMovie(trending[randomIndex]);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar filme em destaque:', error);
+      }
+    };
+    loadFeaturedMovie();
   }, []);
 
   const backgroundVideos = [
@@ -137,24 +156,26 @@ const HeroSection = () => {
           {/* Right Side - Movie Poster and Roulette */}
           <div className="flex justify-center lg:justify-end animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
             <div className="flex gap-8 items-center">
-              {/* Featured Movie Poster */}
-              <div className="hidden lg:block relative">
-                <div className="relative w-48 h-72 rounded-xl overflow-hidden shadow-2xl movie-card">
-                  <img
-                    src="https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg"
-                    alt="Filme em destaque"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <h3 className="font-bold text-lg mb-1">The Matrix</h3>
-                    <p className="text-sm text-white/90">Ficção Científica • 1999</p>
-                    <div className="flex items-center mt-2 text-yellow-400">
-                      <span className="text-sm">⭐ 8.7</span>
+              {/* Featured Movie Poster - Dynamic */}
+              {featuredMovie && (
+                <div className="hidden lg:block relative">
+                  <div className="relative w-48 h-72 rounded-xl overflow-hidden shadow-2xl movie-card">
+                    <img
+                      src={tmdbService.getImageUrl(featuredMovie.poster_path)}
+                      alt={tmdbService.getTitle(featuredMovie)}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                      <h3 className="font-bold text-lg mb-1 line-clamp-1">{tmdbService.getTitle(featuredMovie)}</h3>
+                      <p className="text-sm text-white/90">{tmdbService.formatReleaseYear(tmdbService.getReleaseDate(featuredMovie))}</p>
+                      <div className="flex items-center mt-2 text-yellow-400">
+                        <span className="text-sm">⭐ {featuredMovie.vote_average?.toFixed(1)}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Roulette Component */}
               <div className="relative">
