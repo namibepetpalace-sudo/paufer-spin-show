@@ -130,6 +130,12 @@ const HeroSection = () => {
                 size="lg"
                 variant="outline"
                 className="border-white/80 text-white hover:bg-white/20 hover:text-white px-8 py-4 text-lg transition-all duration-300 backdrop-blur-sm bg-white/10"
+                onClick={() => {
+                  const element = document.getElementById('como-funciona');
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
               >
                 <Info className="h-5 w-5 mr-2" />
                 Como Funciona

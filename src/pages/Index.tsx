@@ -205,6 +205,32 @@ const Index = () => {
       <main>
         <HeroSection />
         
+        {/* Seção Como Funciona */}
+        <section id="como-funciona" className="py-16 bg-card/50">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-12 gradient-text">
+              Como Funciona
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="text-center p-6 bg-card rounded-xl border border-border shadow-lg">
+                <div className="text-5xl mb-4">🎬</div>
+                <h3 className="text-xl font-bold mb-2 text-foreground">1. Escolha seus Gêneros</h3>
+                <p className="text-muted-foreground">Selecione os gêneros de filmes e séries que mais gosta para personalizar suas recomendações</p>
+              </div>
+              <div className="text-center p-6 bg-card rounded-xl border border-border shadow-lg">
+                <div className="text-5xl mb-4">🎰</div>
+                <h3 className="text-xl font-bold mb-2 text-foreground">2. Gire a Roleta</h3>
+                <p className="text-muted-foreground">Deixe a sorte escolher seu próximo filme ou série para assistir com nossa roleta mágica</p>
+              </div>
+              <div className="text-center p-6 bg-card rounded-xl border border-border shadow-lg">
+                <div className="text-5xl mb-4">⭐</div>
+                <h3 className="text-xl font-bold mb-2 text-foreground">3. Descubra e Salve</h3>
+                <p className="text-muted-foreground">Favorite os conteúdos que mais gostou e adicione à sua lista para assistir depois</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        
 
         {searchResults.length > 0 ? (
           <SearchResults results={searchResults} genres={genres} />
