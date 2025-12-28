@@ -4,13 +4,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Edit, Save, ArrowLeft, Camera, Mail, Calendar, Coins } from "lucide-react";
+import { User, Edit, Save, ArrowLeft, Camera, Mail, Calendar, Coins, Trophy, Flame, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useStreak } from "@/hooks/useStreak";
+import { useAchievements, ACHIEVEMENTS_CONFIG } from "@/hooks/useAchievements";
 import Header from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
+import StreakBadge from "@/components/StreakBadge";
+import AchievementToast from "@/components/AchievementToast";
+import { cn } from "@/lib/utils";
 
 interface Profile {
   display_name?: string;
@@ -22,9 +27,12 @@ const ProfilePage = () => {
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [stats, setStats] = useState({ favorites: 0, reviews: 0 });
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { streak } = useStreak();
+  const { achievements, newAchievement, clearNewAchievement, checkAndUnlockAchievements } = useAchievements();
 
   useEffect(() => {
     if (!user) {
@@ -32,6 +40,8 @@ const ProfilePage = () => {
       return;
     }
     loadProfile();
+    loadStats();
+    checkAndUnlockAchievements();
   }, [user, navigate]);
 
   const loadProfile = async () => {
@@ -61,6 +71,24 @@ const ProfilePage = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadStats = async () => {
+    if (!user) return;
+    
+    try {
+      const [favoritesResult, reviewsResult] = await Promise.all([
+        supabase.from('favorites').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+        supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('user_id', user.id)
+      ]);
+
+      setStats({
+        favorites: favoritesResult.count || 0,
+        reviews: reviewsResult.count || 0
+      });
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas:', error);
     }
   };
 
@@ -283,21 +311,65 @@ const ProfilePage = () => {
             {/* Estatísticas de Uso */}
             <Card>
               <CardHeader>
-                <CardTitle>Suas Estatísticas</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Flame className="h-5 w-5 text-orange-500" />
+                  Suas Estatísticas
+                </CardTitle>
                 <CardDescription>
                   Um resumo da sua atividade no PauferFlix
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-6 text-center">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                   <div className="p-4 rounded-lg bg-muted/50">
-                    <div className="text-2xl font-bold text-primary">0</div>
+                    <div className="text-2xl font-bold text-primary">{stats.favorites}</div>
                     <div className="text-sm text-muted-foreground">Favoritos</div>
                   </div>
                   <div className="p-4 rounded-lg bg-muted/50">
-                    <div className="text-2xl font-bold text-primary">0</div>
+                    <div className="text-2xl font-bold text-primary">{stats.reviews}</div>
                     <div className="text-sm text-muted-foreground">Avaliações</div>
                   </div>
+                  <div className="p-4 rounded-lg bg-gradient-to-br from-orange-500/20 to-red-500/20 border border-orange-500/30">
+                    <div className="text-2xl font-bold text-orange-500">{streak.current_streak}</div>
+                    <div className="text-sm text-muted-foreground">Streak Atual 🔥</div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-muted/50">
+                    <div className="text-2xl font-bold text-primary">{streak.longest_streak}</div>
+                    <div className="text-sm text-muted-foreground">Maior Streak</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Conquistas */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-yellow-500" />
+                  Conquistas
+                </CardTitle>
+                <CardDescription>
+                  Desbloqueie conquistas completando desafios
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                  {achievements.map((achievement) => (
+                    <div
+                      key={achievement.id}
+                      className={cn(
+                        "p-3 rounded-xl text-center transition-all",
+                        achievement.unlocked
+                          ? "bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border border-yellow-500/30"
+                          : "bg-muted/30 opacity-50"
+                      )}
+                    >
+                      <div className="text-3xl mb-1">
+                        {achievement.unlocked ? achievement.icon : <Lock className="h-6 w-6 mx-auto text-muted-foreground" />}
+                      </div>
+                      <div className="text-xs font-medium truncate">{achievement.name}</div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -306,6 +378,9 @@ const ProfilePage = () => {
       </main>
 
       <BottomNav />
+      
+      {/* Achievement Toast */}
+      <AchievementToast achievement={newAchievement} onClose={clearNewAchievement} />
     </div>
   );
 };
