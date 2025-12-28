@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import WatchProviders from "@/components/WatchProviders";
+import CommentsSection from "@/components/CommentsSection";
 
 interface MovieDetailsProps {
   type: 'movie' | 'tv';
@@ -320,6 +321,19 @@ const MovieDetails = ({ type }: MovieDetailsProps) => {
             <WatchProviders movieId={parseInt(id!)} mediaType={type} />
           </div>
         )}
+
+        {/* Comments Section */}
+        <div className="container mx-auto px-4 py-8">
+          <Card>
+            <CardContent className="p-6">
+              <CommentsSection 
+                movieId={parseInt(id!)} 
+                mediaType={type}
+                movieTitle={title}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { tmdbService, TMDbMovie, TMDbGenre } from "@/lib/tmdb";
 import WatchProviders from "./WatchProviders";
 import FavoriteButton from "./FavoriteButton";
 import WatchlistButton from "./WatchlistButton";
+import CommentsSection from "./CommentsSection";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -184,6 +185,13 @@ const MovieModal = ({ isOpen, onClose, movie }: MovieModalProps) => {
                 />
               </div>
             )}
+
+            {/* Comentários da Comunidade */}
+            <CommentsSection 
+              movieId={movie.id} 
+              mediaType={tmdbService.getMediaType(movie)}
+              movieTitle={tmdbService.getTitle(movie)}
+            />
           </div>
         )}
       </DialogContent>
